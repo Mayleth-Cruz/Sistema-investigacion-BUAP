@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Production builds
+paquete_servidor.zip
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env.local

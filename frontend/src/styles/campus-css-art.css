@@ -1,0 +1,721 @@
+/**
+ * ============================================================================
+ * CSS ART: FACULTAD DE ADMINISTRACIÓN BUAP (100% PURO CSS CON VARIABLES)
+ * ============================================================================
+ * Recreación artística y fotorrealista de la fotografía de Ciudad Universitaria:
+ * - Edificio de 3 niveles con fachada blanca y ventanería rítmica
+ * - Pórtico central verde salvia con rótulo "FACULTAD DE ADMINISTRACIÓN"
+ * - Muro cortina de cristal esmeralda reflectante
+ * - Asta y Bandera de México ondeante
+ * - Explanada / Plaza central de adoquín con líneas de cuadrícula
+ * - Plancha circular de césped con marcas blancas
+ * - Jardineras cuadradas y pinos icónicos del campus
+ * - Luminarias cónicas modernas de Ciudad Universitaria
+ * ============================================================================
+ */
+
+:root,
+.css-campus-scene {
+  /* -------------------------------------------------------------
+   * VARIABLES DE PERSONALIZACIÓN RÁPIDA (FÁCIL AJUSTE DE COLORES)
+   * ------------------------------------------------------------- */
+  /* 1. Atmósfera y Cielo */
+  --sky-top: #529fd8;
+  --sky-mid: #7ebbef;
+  --sky-horizon: #c5e2f7;
+  --sun-glow: rgba(255, 255, 255, 0.45);
+
+  /* 2. Edificio Principal (Arquitectura Blanca Minimalista) */
+  --bldg-facade: #ffffff;
+  --bldg-facade-shade: #edf1f5;
+  --bldg-parapet: #d8e0e8;
+  --bldg-shadow: rgba(0, 32, 56, 0.18);
+  --bldg-moulding: #c9d4de;
+
+  /* 3. Pórtico Central y Rótulo Institucional */
+  --portico-green: #556c5e;
+  --portico-green-shadow: #3d4f44;
+  --portico-text: #ffffff;
+
+  /* 4. Ventanales de Cristal Reflectante */
+  --glass-base: #2e626b;
+  --glass-reflect: #5fa8b3;
+  --glass-highlight: rgba(255, 255, 255, 0.45);
+  --window-frame: #1b3d43;
+
+  /* 5. Explanada / Plaza de Concreto */
+  --plaza-concrete: #d5d7d3;
+  --plaza-concrete-shade: #c2c5c0;
+  --plaza-grid-line: #a8aca4;
+  --plaza-kerb: #b4b9b0;
+
+  /* 6. Áreas Verdes, Jardineras y Pinos */
+  --grass-circle: #2a7c36;
+  --grass-lawn: #429340;
+  --grass-shadow: #1c5725;
+  --tree-pine-dark: #1b4520;
+  --tree-pine-mid: #2c6332;
+  --tree-pine-light: #44864b;
+  --tree-bg-deep: #254c2a;
+
+  /* 7. Mobiliario Urbano, Luminarias y Farolas */
+  --lamppost-pole: #6f777c;
+  --lamppost-head: #41474c;
+  --lamppost-glass: #d8e5ec;
+  --lamppost-light: rgba(255, 255, 255, 0.85);
+
+  /* 8. Bandera de México */
+  --flag-green: #006847;
+  --flag-white: #ffffff;
+  --flag-red: #ce1126;
+  --flag-pole: #8c969e;
+}
+
+/* ============================================================================
+ * CONTENEDOR GENERAL DE LA ESCENA
+ * ============================================================================ */
+.css-campus-scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 28%, var(--sky-horizon) 50%, var(--plaza-concrete) 50%);
+}
+
+/* Sol suave y resplandor cenital */
+.css-campus-scene::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: 15%;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sun-glow) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================================================
+ * CAPA 1: ARBOLADO DE FONDO (DETRÁS DEL EDIFICIO)
+ * ============================================================================ */
+.css-bg-treeline {
+  position: absolute;
+  bottom: 49%;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.css-bg-tree-cluster {
+  position: absolute;
+  bottom: 0;
+  background: var(--tree-bg-deep);
+  border-radius: 50% 50% 10% 10%;
+  opacity: 0.88;
+}
+
+.css-bg-tree-1 { width: 90px; height: 50px; left: 42%; }
+.css-bg-tree-2 { width: 70px; height: 42px; left: 47%; }
+.css-bg-tree-3 { width: 110px; height: 56px; left: 54%; }
+.css-bg-tree-4 { width: 80px; height: 45px; right: 1%; }
+
+/* ============================================================================
+ * CAPA 2: EDIFICIO FACULTAD DE ADMINISTRACIÓN
+ * ============================================================================ */
+.css-building-facade {
+  position: absolute;
+  bottom: 47%;
+  left: 3%;
+  right: 3%;
+  height: 195px;
+  background: var(--bldg-facade);
+  box-shadow: 0 10px 22px var(--bldg-shadow);
+  z-index: 4;
+  display: flex;
+  align-items: stretch;
+}
+
+/* Pretil y remate superior del techo */
+.css-building-facade::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--bldg-parapet);
+  border-bottom: 1px solid var(--bldg-moulding);
+}
+
+/* Sombra proyectada por el edificio en la base */
+.css-building-facade::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: -2%;
+  right: -2%;
+  height: 9px;
+  background: linear-gradient(180deg, rgba(0, 32, 56, 0.22) 0%, rgba(0, 32, 56, 0) 100%);
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------
+ * ALAS LATERALES (VENTANAS EN 3 PISOS x 3 COLUMNAS)
+ * ------------------------------------------------------------- */
+.css-building-wing {
+  flex: 1;
+  padding: 18px 16px 8px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.css-window-floor {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+}
+
+.css-window-pane {
+  flex: 1;
+  height: 28px;
+  background: linear-gradient(135deg, var(--glass-base) 0%, var(--glass-reflect) 65%, var(--glass-base) 100%);
+  border: 1.5px solid var(--window-frame);
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+/* Reflejos diagonales en los cristales */
+.css-window-pane::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 60px;
+  height: 80px;
+  background: linear-gradient(45deg, transparent 40%, var(--glass-highlight) 50%, transparent 60%);
+  transform: rotate(25deg);
+  pointer-events: none;
+}
+
+/* División central de cancelería */
+.css-window-pane::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--window-frame);
+}
+
+/* -------------------------------------------------------------
+ * PÓRTICO CENTRAL VERDE OLIVA CON RÓTULO DE LA FACULTAD
+ * ------------------------------------------------------------- */
+.css-building-portico {
+  width: 180px;
+  flex-shrink: 0;
+  position: relative;
+  background: var(--portico-green);
+  box-shadow: inset 0 0 14px var(--portico-green-shadow), 0 0 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Encabezado con el Rótulo: "FACULTAD DE ADMINISTRACIÓN" */
+.css-portico-header {
+  padding: 10px 8px;
+  text-align: center;
+  background: var(--portico-green);
+  border-bottom: 2px solid var(--portico-green-shadow);
+}
+
+.css-portico-title {
+  font-family: var(--font-gotham);
+  font-size: 8.5px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--portico-text);
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+/* Muro cortina de cristal esmeralda central */
+.css-portico-glass-wall {
+  flex: 1;
+  margin: 0 14px;
+  background: linear-gradient(170deg, #1b4b52 0%, #2f737c 50%, #1a4248 100%);
+  position: relative;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 1.5px;
+  padding: 1.5px;
+  background-color: var(--window-frame);
+}
+
+.css-glass-tile {
+  background: linear-gradient(135deg, #275d65 0%, #468c97 50%, #225159 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.css-glass-tile::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.22) 50%, transparent 60%);
+}
+
+/* Puerta frontal de acceso en la planta baja */
+.css-portico-doors {
+  height: 24px;
+  background: #142a2f;
+  margin: 0 20px;
+  border-top: 1px solid var(--window-frame);
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+}
+
+.css-portico-door {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid #2b4f57;
+}
+
+/* -------------------------------------------------------------
+ * ASTA Y BANDERA DE MÉXICO (A LA DERECHA DEL PÓRTICO)
+ * ------------------------------------------------------------- */
+.css-flagpole-wrapper {
+  position: absolute;
+  right: -24px;
+  top: -24px;
+  height: 120px;
+  width: 20px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.css-flagpole {
+  position: absolute;
+  top: 0;
+  left: 3px;
+  width: 2.5px;
+  height: 100%;
+  background: linear-gradient(90deg, #b8c2ca 0%, #768188 100%);
+  border-radius: 1px;
+}
+
+.css-flagpole-finial {
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f1b32d;
+}
+
+.css-flag-tricolor {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  width: 20px;
+  height: 12px;
+  display: flex;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  animation: cssFlagWave 2.8s ease-in-out infinite alternate;
+  transform-origin: left center;
+}
+
+.css-flag-stripe-green { flex: 1; background: var(--flag-green); }
+.css-flag-stripe-white { flex: 1; background: var(--flag-white); position: relative; }
+.css-flag-stripe-red   { flex: 1; background: var(--flag-red); }
+
+/* Escudo nacional en miniatura */
+.css-flag-stripe-white::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 3px;
+  background: #946927;
+  border-radius: 50%;
+}
+
+@keyframes cssFlagWave {
+  0% { transform: skewY(0deg) scaleX(1); }
+  50% { transform: skewY(-4deg) scaleX(0.96); }
+  100% { transform: skewY(4deg) scaleX(1.02); }
+}
+
+/* ============================================================================
+ * CAPA 3: EXPLANADA / PLAZA CENTRAL EN PERSPECTIVA
+ * ============================================================================ */
+.css-plaza-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48%;
+  background: linear-gradient(180deg, var(--plaza-concrete) 0%, var(--plaza-concrete-shade) 100%);
+  z-index: 5;
+  overflow: hidden;
+}
+
+/* Cuadrícula de juntas de adoquín */
+.css-plaza-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, var(--plaza-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--plaza-grid-line) 1px, transparent 1px);
+  background-size: 64px 34px;
+  opacity: 0.6;
+}
+
+/* Plancha circular de césped con marca blanca a la izquierda */
+.css-circle-lawn {
+  position: absolute;
+  bottom: 42%;
+  left: 6%;
+  width: 140px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--grass-circle);
+  box-shadow: inset 0 2px 4px var(--grass-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.css-circle-lawn-inner {
+  width: 70px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Jardineras cuadradas con pasto */
+.css-square-planter {
+  position: absolute;
+  background: var(--grass-lawn);
+  border: 2px solid var(--plaza-kerb);
+  box-shadow: inset 0 2px 4px var(--grass-shadow), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.css-planter-1 {
+  bottom: 12%;
+  right: 22%;
+  width: 78px;
+  height: 44px;
+  transform: perspective(100px) rotateX(25deg);
+}
+
+.css-planter-2 {
+  bottom: 30%;
+  left: 34%;
+  width: 50px;
+  height: 28px;
+  transform: perspective(100px) rotateX(25deg);
+}
+
+.css-planter-3 {
+  bottom: 28%;
+  right: 14%;
+  width: 90px;
+  height: 38px;
+  transform: perspective(100px) rotateX(25deg);
+}
+
+/* -------------------------------------------------------------
+ * PINOS Y ÁRBOLES DEL CAMPUS EN LA PLAZA
+ * ------------------------------------------------------------- */
+.css-campus-tree {
+  position: absolute;
+  pointer-events: none;
+  z-index: 7;
+}
+
+/* Árbol esbelto tipo pino a la izquierda */
+.css-tree-left {
+  bottom: 26%;
+  left: 26%;
+  width: 56px;
+  height: 110px;
+}
+
+.css-tree-left-trunk {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 28px;
+  background: #3e2f20;
+}
+
+.css-tree-left-foliage {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 85px;
+  background: radial-gradient(circle at 40% 35%, var(--tree-pine-light) 0%, var(--tree-pine-mid) 50%, var(--tree-pine-dark) 100%);
+  border-radius: 50% 50% 45% 45%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Pino frondoso y amplio a la derecha del pórtico */
+.css-tree-center-right {
+  bottom: 24%;
+  right: 28%;
+  width: 86px;
+  height: 125px;
+}
+
+.css-tree-cr-trunk {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 30px;
+  background: #443224;
+}
+
+.css-tree-cr-foliage {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 82px;
+  height: 98px;
+  background: radial-gradient(circle at 45% 30%, #569b5c 0%, var(--tree-pine-mid) 55%, var(--tree-pine-dark) 100%);
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Árbol mediano cerca de la jardinera */
+.css-tree-midground {
+  bottom: 28%;
+  left: 45%;
+  width: 42px;
+  height: 80px;
+}
+
+.css-tree-mg-trunk {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 20px;
+  background: #3a2c1e;
+}
+
+.css-tree-mg-foliage {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 62px;
+  background: radial-gradient(circle at 40% 30%, #57995c 0%, #2f6935 60%, #1c4521 100%);
+  border-radius: 50%;
+}
+
+/* Ciprés esbelto / columna verde */
+.css-tree-cypress {
+  position: absolute;
+  bottom: 26%;
+  left: 18.5%;
+  width: 14px;
+  height: 68px;
+  background: linear-gradient(90deg, var(--tree-pine-mid) 0%, var(--tree-pine-dark) 100%);
+  border-radius: 12px 12px 3px 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* -------------------------------------------------------------
+ * LUMINARIAS CÓNICAS MODERNAS DE CIUDAD UNIVERSITARIA
+ * ------------------------------------------------------------- */
+.css-lamppost {
+  position: absolute;
+  pointer-events: none;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Poste en primer plano (Izquierda) */
+.css-lamppost-foreground {
+  bottom: 3%;
+  left: 20%;
+  width: 36px;
+  height: 250px;
+}
+
+.css-lantern-head {
+  width: 34px;
+  height: 44px;
+  background: linear-gradient(180deg, var(--lamppost-head) 0%, var(--lamppost-glass) 30%, #ffffff 60%, var(--lamppost-head) 100%);
+  clip-path: polygon(10% 0%, 90% 0%, 65% 100%, 35% 100%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.css-lantern-head::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: var(--lamppost-light);
+  opacity: 0.65;
+  clip-path: polygon(12% 0%, 88% 0%, 65% 100%, 35% 100%);
+}
+
+.css-lantern-pole {
+  width: 4px;
+  flex: 1;
+  background: linear-gradient(90deg, #959fa6 0%, #4c5357 100%);
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.css-lantern-base {
+  width: 12px;
+  height: 6px;
+  background: #393e42;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Postes secundarios en perspectiva */
+.css-lamppost-mid-left {
+  bottom: 18%;
+  left: 5%;
+  width: 22px;
+  height: 160px;
+  opacity: 0.95;
+}
+
+.css-lamppost-mid-left .css-lantern-head {
+  width: 20px;
+  height: 28px;
+}
+
+.css-lamppost-mid-left .css-lantern-pole {
+  width: 2.5px;
+}
+
+.css-lamppost-mid-right {
+  bottom: 16%;
+  right: 8%;
+  width: 26px;
+  height: 185px;
+  opacity: 0.95;
+}
+
+.css-lamppost-mid-right .css-lantern-head {
+  width: 24px;
+  height: 32px;
+}
+
+.css-lamppost-mid-right .css-lantern-pole {
+  width: 3px;
+}
+
+.css-lamppost-center {
+  bottom: 24%;
+  left: 52%;
+  width: 16px;
+  height: 110px;
+  opacity: 0.85;
+}
+
+.css-lamppost-center .css-lantern-head {
+  width: 15px;
+  height: 20px;
+}
+
+.css-lamppost-center .css-lantern-pole {
+  width: 2px;
+}
+
+/* Monumento / pedestal del ágora a la derecha */
+.css-plaza-monument {
+  position: absolute;
+  bottom: 26%;
+  right: 17%;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #d2d6d8 0%, #a4abb0 100%);
+  border: 1px solid #92999e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 6;
+}
+
+/* Figura estilizada caminando en el andador central */
+.css-campus-student {
+  position: absolute;
+  bottom: 28%;
+  left: 54%;
+  width: 8px;
+  height: 22px;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.css-student-head {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #25282a;
+  margin: 0 auto;
+}
+
+.css-student-body {
+  width: 5px;
+  height: 10px;
+  background: #b72b2b; /* Camisa roja/mochila */
+  margin: 1px auto 0;
+  border-radius: 1px;
+}
+
+.css-student-legs {
+  width: 4px;
+  height: 8px;
+  background: #18222d;
+  margin: 0 auto;
+}
+
+/* ============================================================================
+ * CAPA 4: EFECTOS ATMOSFÉRICOS FINALES
+ * ============================================================================ */
+.css-campus-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 85% 20%, transparent 60%, rgba(0, 40, 64, 0.15) 100%);
+  z-index: 10;
+}

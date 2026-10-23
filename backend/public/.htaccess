@@ -1,0 +1,28 @@
+# ============================================================================
+# CONFIGURACIÓN APACHE (.htaccess) PARA SI3 API Y SPA (REACT)
+# ============================================================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Permitir cabeceras de autorización Bearer para JWT / Tokens
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # 1. Rutas de la API REST -> despachar siempre a index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} ^/api [NC]
+    RewriteRule ^(.*)$ index.php [QSA,L]
+
+    # 2. Si existe index.html y la ruta no es archivo físico ni /api -> despachar a index.html (SPA)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/index.html -f
+    RewriteRule ^ index.html [L]
+
+    # 3. Fallback general: si no existe index.html, enviar a index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

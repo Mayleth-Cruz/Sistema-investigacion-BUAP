@@ -1,0 +1,82 @@
+/**
+ * ============================================================================
+ * DESIGN TOKENS - SISTEMA DE DISEÑO DEL CRIS (SI3)
+ * ============================================================================
+ * Define variables de color, degradados armónicos, sombras con elevación,
+ * bordes y tipografías para garantizar una estética moderna y visualmente
+ * impactante sin depender de TailwindCSS.
+ */
+
+:root {
+  /* Paleta Principal: Modo Oscuro Sofisticado y Científico */
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-card: rgba(17, 24, 39, 0.75);
+  --bg-card-hover: rgba(31, 41, 55, 0.85);
+  --bg-glass: rgba(17, 24, 39, 0.65);
+  --bg-glass-card: rgba(255, 255, 255, 0.03);
+
+  /* Acentos de Color */
+  --accent-cyan: #06b6d4;
+  --accent-blue: #3b82f6;
+  --accent-indigo: #6366f1;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-purple: #a855f7;
+
+  /* Degradados Dinámicos */
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --gradient-cyan: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  --gradient-emerald: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-rose: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+
+  /* Escala de Grises y Textos */
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-light: #ffffff;
+
+  /* Bordes y Separadores */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(255, 255, 255, 0.12);
+  --border-focus: #3b82f6;
+
+  /* Sombras y Luces */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -1px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.45), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-glow-cyan: 0 0 25px rgba(6, 182, 212, 0.25);
+  --shadow-glow-blue: 0 0 25px rgba(59, 130, 246, 0.25);
+
+  /* Cuartiles de Publicación (Scopus / Web of Science) */
+  --color-q1: #10b981;
+  --color-q1-bg: rgba(16, 185, 129, 0.15);
+  --color-q2: #3b82f6;
+  --color-q2-bg: rgba(59, 130, 246, 0.15);
+  --color-q3: #f59e0b;
+  --color-q3-bg: rgba(245, 158, 11, 0.15);
+  --color-q4: #f43f5e;
+  --color-q4-bg: rgba(244, 63, 94, 0.15);
+  --color-q-none: #9ca3af;
+  --color-q-none-bg: rgba(156, 163, 175, 0.15);
+
+  /* Tipografías */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Espaciados y Radios */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
