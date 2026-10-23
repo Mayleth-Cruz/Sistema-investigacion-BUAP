@@ -291,6 +291,11 @@ label {
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+  min-width: 620px;
 }
 
 table {
@@ -462,44 +467,404 @@ tr:hover td {
 /* ============================================================================
  * RESPONSIVIDAD TOTAL (MÓVILES Y TABLETAS)
  * ============================================================================ */
-@media (max-width: 900px) {
-  .nav {
-    padding: 12px 20px;
-  }
-  .hero-buap {
-    padding: 36px 20px;
-  }
-  .hero-buap h1 {
-    font-size: 28px;
-  }
-  .side {
-    width: 100%;
-    min-height: auto;
-    padding: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .side h3 {
-    width: 100%;
-    margin-bottom: 12px;
-  }
-  .side a {
-    display: inline-flex;
-    margin-bottom: 0;
-    padding: 8px 12px;
-    font-size: 13.5px;
-  }
+/* ============================================================================
+ * NAVEGACIÓN RESPONSIVA Y SIDEBAR MÓVIL (BUAP)
+ * ============================================================================ */
+.nav-hamburger-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--buap-blue-302);
+  padding: 8px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
-@media (max-width: 680px) {
+.nav-hamburger-btn:hover {
+  background: #EBF5FA;
+}
+
+.nav-hamburger-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 43, 73, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  animation: fadeInBackdrop 0.2s ease-out forwards;
+}
+
+.mobile-sidebar-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 85vw;
+  background: #ffffff;
+  z-index: 9999;
+  box-shadow: -6px 0 24px rgba(0, 43, 73, 0.22);
+  display: flex;
+  flex-direction: column;
+  animation: slideInDrawer 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mobile-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-light);
+  background: #F8FAFC;
+}
+
+.mobile-sidebar-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--buap-blue-302);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.mobile-sidebar-close-btn:hover {
+  background: #E2E8F0;
+}
+
+.mobile-sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-source);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.mobile-nav-item:hover {
+  background: #EBF5FA;
+  color: var(--buap-blue-302);
+}
+
+.mobile-nav-item.active {
+  background: #E0F2FE;
+  color: var(--buap-blue-302);
+  font-weight: 700;
+  border-left: 4px solid var(--buap-cyan-306);
+}
+
+.mobile-sidebar-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 20px 0;
+}
+
+.mobile-sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ============================================================================
+ * FILTROS FLOTANTES MÓVILES (HOME SEARCH)
+ * ============================================================================ */
+.home-search-content-wrapper {
+  display: flex;
+  gap: 32px;
+  padding: 32px 40px;
+  flex-wrap: wrap;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.mobile-filters-trigger-wrapper {
+  display: none; /* Oculto en pantallas grandes */
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.btn-mobile-filters {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: var(--buap-blue-302);
+  border: 1.5px solid var(--buap-blue-302);
+  border-radius: 8px;
+  padding: 0 16px;
+  min-height: 42px;
+  font-family: var(--font-source);
+  font-weight: 700;
+  font-size: 14.5px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 59, 92, 0.08);
+  transition: all 0.15s ease;
+}
+
+.btn-mobile-filters:hover {
+  background: #EBF5FA;
+}
+
+.mobile-filters-badge {
+  background: var(--buap-cyan-306);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  line-height: 1;
+}
+
+.btn-clear-mobile-trigger {
+  background: transparent;
+  border: none;
+  color: #0284C7;
+  font-family: var(--font-source);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px;
+}
+
+/* Modal / Bottom Sheet Flotante de Filtros para Móvil */
+.mobile-filter-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 43, 73, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeInBackdrop 0.2s ease-out forwards;
+}
+
+.mobile-filter-modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+.mobile-filter-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border-light);
+  background: #F8FAFC;
+}
+
+.mobile-filter-modal-body {
+  padding: 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-filter-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--border-light);
+  background: #F8FAFC;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInDrawer {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* ============================================================================
+ * ADMIN SIDEBAR RESPONSIVO Y DRAWER MÓVIL
+ * ============================================================================ */
+.admin-layout-wrapper {
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  display: flex;
+}
+
+.admin-mobile-nav-bar {
+  display: none; /* Oculto en computadoras */
+  width: 100%;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.admin-mobile-menu-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+  border: 1.5px solid #BAE6FD;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-mobile-menu-trigger:hover {
+  background: #EBF5FA;
+  border-color: var(--buap-cyan-306);
+}
+
+.admin-mobile-nav-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--buap-blue-302);
+  background: #E0F2FE;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: var(--font-source);
+}
+
+.admin-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 85vw;
+  background: #ffffff;
+  z-index: 10000;
+  box-shadow: 6px 0 24px rgba(0, 43, 73, 0.22);
+  display: flex;
+  flex-direction: column;
+  animation: slideInFromLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.admin-content-area {
+  flex: 1;
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  max-width: 1320px;
+  width: 100%;
+}
+
+/* ============================================================================
+ * RESPONSIVIDAD TOTAL (MÓVILES Y TABLETAS)
+ * ============================================================================ */
+@media (max-width: 860px) {
   .nav {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .nav-links {
-    width: 100%;
+    padding: 12px 18px;
+    flex-direction: row;
+    align-items: center;
     justify-content: space-between;
+  }
+  .nav-links.desktop-only {
+    display: none !important;
+  }
+  .nav-hamburger-btn {
+    display: inline-flex;
+  }
+
+  /* Home Search: Ocultar panel estático izquierdo y mostrar botón flotante */
+  .desktop-filters-panel {
+    display: none !important;
+  }
+  .mobile-filters-trigger-wrapper {
+    display: flex;
+  }
+  .home-search-content-wrapper {
+    padding: 18px 16px !important;
+    gap: 16px !important;
+  }
+
+  /* Admin: Ocultar sidebar fijo desktop y mostrar disparador móvil */
+  .admin-desktop-sidebar {
+    display: none !important;
+  }
+  .admin-mobile-nav-bar {
+    display: block !important;
+  }
+  .admin-content-area {
+    padding: 20px 16px !important;
+    gap: 16px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .admin-layout-wrapper {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .hero-buap {
+    padding: 30px 18px;
+  }
+  .hero-buap h1 {
+    font-size: 26px !important;
+  }
+  .hero-buap h2 {
+    font-size: 14.5px !important;
   }
 }
 

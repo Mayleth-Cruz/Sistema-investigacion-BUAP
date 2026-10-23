@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { categoryService } from '../../services/categoryService';
 import CategoryModal from '../../components/CategoryModal';
 import { CategoryIcon, IconArrowLeft } from '../../components/Icons';
+import AdminSidebar from '../../components/AdminSidebar';
 
 /**
  * ============================================================================
@@ -82,29 +83,16 @@ export default function AdminCategoriesScreen({ onNavigate, showToast }) {
   const genresCount = categories.filter(c => c.tipo === 'genero_publicacion').length;
 
   return (
-    <div style={{ width: '100%', minHeight: 'calc(100vh - 72px)', display: 'flex', flexWrap: 'wrap' }}>
+    <div className="admin-layout-wrapper">
       
-      {/* 1. Menú Lateral de Administración */}
-      <div className="side">
-        <h3 className="encabezado-source-black">
-          Administración
-        </h3>
-        <a onClick={() => onNavigate('admin-panel')}>
-          Panel
-        </a>
-        <a onClick={() => onNavigate('admin-upload')}>
-          Subir artículo
-        </a>
-        <a onClick={() => onNavigate('admin-authors')}>
-          Autores
-        </a>
-        <a className="on">
-          Categorías
-        </a>
-      </div>
+      {/* 1. Menú Lateral de Administración (Desktop y Drawer Móvil) */}
+      <AdminSidebar 
+        activeNav="categorias" 
+        onNavigate={onNavigate} 
+      />
 
       {/* 2. Área Central */}
-      <div style={{ flex: 1, padding: '32px 40px', minWidth: '320px', maxWidth: '1200px' }}>
+      <div className="admin-content-area" style={{ maxWidth: '1200px' }}>
         
         {/* Cabecera Principal */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>

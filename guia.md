@@ -652,6 +652,40 @@ Abre tu enlace de Vercel en cualquier navegador, tablet o celular:
 
 ---
 
+### ¿Cómo actualizar la aplicación cuando hagas cambios en el código? (Flujo CI/CD Automático)
+
+Una de las mayores ventajas de la **Opción B (Vercel + Render)** es el **Despliegue Continuo (CI/CD)**: no necesitas volver a configurar nada ni entrar a las páginas de Vercel o Render cada vez que modifiques código.
+
+Cada vez que hagas cambios en tus archivos locales (en componentes de React, estilos CSS, controladores PHP o la base de datos), solo necesitas ejecutar estos **3 comandos en tu terminal**:
+
+```bash
+# 1. Preparar todos los archivos modificados
+git add .
+
+# 2. Guardar el cambio con un mensaje descriptivo de lo que hiciste
+git commit -m "Descripción de los cambios que realizaste"
+
+# 3. Enviar los cambios a GitHub
+git push origin main
+```
+
+#### ¿Qué sucede automáticamente después de hacer `git push`?
+1. **GitHub** recibe tus nuevos cambios en la rama `main`.
+2. **Vercel** detecta el cambio al instante:
+   - Si modificaste archivos dentro de `frontend/`, Vercel inicia automáticamente una nueva compilación en segundo plano.
+   - En unos **25 a 35 segundos**, tu sitio web en vivo (`https://tu-proyecto.vercel.app`) se actualizará con los nuevos cambios sin que la página se caiga en ningún momento.
+3. **Render** detecta el cambio al instante:
+   - Si modificaste archivos dentro de `backend/`, Render reconstruye el contenedor Docker automáticamente.
+   - En unos **2 minutos**, tu API en vivo (`https://tu-api.onrender.com`) quedará actualizada con el nuevo código PHP.
+
+#### Consejos útiles de trabajo:
+- **Ver qué archivos has modificado:** Antes de hacer commit, puedes escribir `git status` para ver la lista de archivos que cambiaste.
+- **Diferencia entre código y datos:**
+  - Si un usuario o administrador sube un artículo o descarga un PDF **desde la página web**, eso se guarda en la base de datos en vivo de inmediato; **no** requiere hacer `git push`.
+  - El `git push` solo se usa cuando modificas el **código fuente** (archivos `.jsx`, `.css`, `.php`, etc.).
+
+---
+
 **Benemérita Universidad Autónoma de Puebla · Vicerrectoría de Investigación y Estudios de Posgrado (VIEP)**  
 *Sistema Integral de Información para la Investigación (SI3) · 2026*
 

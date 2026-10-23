@@ -3,6 +3,7 @@ import { publicationService } from '../../services/publicationService';
 import DeleteArticleModal from '../../components/DeleteArticleModal';
 import { getDocumentUrl } from '../../services/api';
 import { IconEye, IconDownload, IconArrowLeft } from '../../components/Icons';
+import AdminSidebar from '../../components/AdminSidebar';
 
 /**
  * ============================================================================
@@ -106,41 +107,17 @@ export default function AdminPanelScreen({
   };
 
   return (
-    <div style={{ width: '100%', minHeight: 'calc(100vh - 72px)', display: 'flex', flexWrap: 'wrap' }}>
+    <div className="admin-layout-wrapper">
       
-      {/* 1. Menú Lateral de Administración */}
-      <div className="side">
-        <h3 className="encabezado-source-black">
-          Administración
-        </h3>
-        <a 
-          className={activeNav === 'panel' ? 'on' : ''} 
-          onClick={() => onNavigate('admin-panel')}
-        >
-          Panel
-        </a>
-        <a 
-          className={activeNav === 'subir' ? 'on' : ''} 
-          onClick={onUploadClick}
-        >
-          Subir artículo
-        </a>
-        <a 
-          className={activeNav === 'autores' ? 'on' : ''} 
-          onClick={() => onNavigate('admin-authors')}
-        >
-          Autores
-        </a>
-        <a 
-          className={activeNav === 'categorias' ? 'on' : ''} 
-          onClick={() => onNavigate('admin-categories')}
-        >
-          Categorías
-        </a>
-      </div>
+      {/* 1. Menú Lateral de Administración (Desktop y Drawer Móvil) */}
+      <AdminSidebar 
+        activeNav="panel" 
+        onNavigate={onNavigate} 
+        onUploadClick={onUploadClick} 
+      />
 
       {/* 2. Área Central de Contenido */}
-      <div style={{ flex: 1, padding: '32px 40px', display: 'flex', flexDirection: 'column', gap: '24px', minWidth: '320px', maxWidth: '1320px' }}>
+      <div className="admin-content-area">
         
         {/* Cabecera del Panel con Gotham Black */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>

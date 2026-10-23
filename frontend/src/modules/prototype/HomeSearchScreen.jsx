@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { publicationService } from '../../services/publicationService';
 import { categoryService } from '../../services/categoryService';
 import { getDocumentUrl } from '../../services/api';
-import { IconSearch, IconEye, IconDownload, IconBook, IconCalendar } from '../../components/Icons';
+import { IconSearch, IconEye, IconDownload, IconBook, IconCalendar, IconFilter, IconX } from '../../components/Icons';
 
 /**
  * ============================================================================
@@ -33,6 +33,30 @@ export default function HomeSearchScreen({ onSelectArticle, onNavigate }) {
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedEvent, setSelectedEvent] = useState('');
   const [authorQuery, setAuthorQuery] = useState('');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+
+  // Prevenir scroll en body al abrir el modal flotante de filtros en móvil
+  useEffect(() => {
+    if (isFilterModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isFilterModalOpen]);
+
+  // Cerrar modal al presionar Escape
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsFilterModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Categorías y Eventos institucionales dinámicos desde BD
   const [categoriesList, setCategoriesList] = useState([]);
@@ -184,6 +208,7 @@ export default function HomeSearchScreen({ onSelectArticle, onNavigate }) {
   };
 
   const hasActiveFilters = Boolean(searchKeyword || selectedCategory || selectedYear || selectedEvent || authorQuery);
+  const activeFilterCount = [selectedCategory, selectedYear, selectedEvent, authorQuery.trim()].filter(Boolean).length;
 
   return (
     <div style={{ width: '100%', minHeight: 'calc(100vh - 72px)' }}>
@@ -244,10 +269,10 @@ export default function HomeSearchScreen({ onSelectArticle, onNavigate }) {
       </div>
 
       {/* 2. Cuerpo Principal: Filtros y Resultados */}
-      <div style={{ display: 'flex', gap: '32px', padding: '32px 40px', flexWrap: 'wrap', maxWidth: '1360px', margin: '0 auto' }}>
+      <div className="home-search-content-wrapper">
         
-        {/* Panel Izquierdo: Filtros */}
-        <div className="card" style={{ width: '270px', height: 'fit-content', display: 'flex', flexDirection: 'column', gap: '18px', flexShrink: 0 }}>
+        {/* Panel Izquierdo: Filtros (Desktop) */}
+        <div className="card desktop-filters-panel" style={{ width: '270px', height: 'fit-content', display: 'flex', flexDirection: 'column', gap: '18px', flexShrink: 0 }}>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 className="encabezado-source-black" style={{ fontSize: '18px', margin: 0 }}>
@@ -376,7 +401,33 @@ export default function HomeSearchScreen({ onSelectArticle, onNavigate }) {
         </div>
 
         {/* Panel Derecho: Lista de Resultados */}
-        <div style={{ flex: 1, minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          
+          {/* Botón Flotante / Barra de Filtros Móvil (Visible solo en móviles) */}
+          <div className="mobile-filters-trigger-wrapper">
+            <button
+              type="button"
+              className="btn btn-mobile-filters"
+              onClick={() => setIsFilterModalOpen(true)}
+              aria-label="Abrir filtros de búsqueda"
+            >
+              <IconFilter size={17} color="var(--buap-blue-302)" />
+              <span>Filtros de búsqueda</span>
+              {activeFilterCount > 0 && (
+                <span className="mobile-filters-badge">{activeFilterCount}</span>
+              )}
+            </button>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="btn-clear-mobile-trigger"
+                onClick={handleResetFilters}
+              >
+                Limpiar filtros ({activeFilterCount})
+              </button>
+            )}
+          </div>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="muted" style={{ fontWeight: 600, fontSize: '14.5px' }}>
@@ -526,6 +577,156 @@ export default function HomeSearchScreen({ onSelectArticle, onNavigate }) {
           )}
         </div>
       </div>
+
+      {/* 3. Modal / Bottom Sheet Flotante de Filtros (Móvil) */}
+      {isFilterModalOpen && (
+        <div 
+          className="mobile-filter-modal-backdrop"
+          onClick={() => setIsFilterModalOpen(false)}
+          aria-hidden="true"
+        >
+          <div 
+            className="mobile-filter-modal-card"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filtros de búsqueda"
+          >
+            <div className="mobile-filter-modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <IconFilter size={18} color="var(--buap-blue-302)" />
+                <h3 className="titulo-gotham-black" style={{ fontSize: '18px', margin: 0, color: 'var(--buap-blue-302)' }}>
+                  Filtros de Búsqueda
+                </h3>
+                {activeFilterCount > 0 && (
+                  <span className="mobile-filters-badge">{activeFilterCount}</span>
+                )}
+              </div>
+              <button
+                type="button"
+                className="mobile-sidebar-close-btn"
+                aria-label="Cerrar filtros"
+                onClick={() => setIsFilterModalOpen(false)}
+              >
+                <IconX size={20} color="var(--buap-blue-302)" />
+              </button>
+            </div>
+
+            <div className="mobile-filter-modal-body">
+              {/* Filtro 1: Área del Conocimiento */}
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '13.5px', marginBottom: '6px', color: '#1E293B' }}>
+                  Área del conocimiento
+                </label>
+                <select 
+                  aria-label="Área del conocimiento"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                >
+                  <option value="">Todas las áreas</option>
+                  {categoriesList.map(cat => (
+                    <option key={cat.id} value={cat.nombre}>
+                      {cat.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filtro 2: Año de publicación */}
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '13.5px', marginBottom: '6px', color: '#1E293B' }}>
+                  Año de publicación
+                </label>
+                <select 
+                  aria-label="Año"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                >
+                  <option value="">Todos los años</option>
+                  <option value="2026">2026</option>
+                  <option value="2025">2025</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                </select>
+              </div>
+
+              {/* Filtro 3: Evento académico / Congreso */}
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '13.5px', marginBottom: '6px', color: '#1E293B' }}>
+                  Evento / Congreso
+                </label>
+                <select 
+                  aria-label="Evento"
+                  value={selectedEvent}
+                  onChange={(e) => setSelectedEvent(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                  disabled={eventsList.length === 0}
+                >
+                  <option value="">
+                    {eventsList.length === 0 ? 'Sin eventos registrados' : 'Todos los eventos'}
+                  </option>
+                  {eventsList.map((ev, idx) => (
+                    <option key={idx} value={ev}>
+                      {ev}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filtro 4: Autor */}
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '13.5px', marginBottom: '6px', color: '#1E293B' }}>
+                  Investigador / Autor
+                </label>
+                <input 
+                  aria-label="Autor" 
+                  placeholder="Ej: Elena Ramos, Carlos..."
+                  value={authorQuery}
+                  onChange={(e) => setAuthorQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleApplyFilters();
+                      setIsFilterModalOpen(false);
+                    }
+                  }}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            <div className="mobile-filter-modal-footer">
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  className="btn btn2"
+                  onClick={() => {
+                    handleResetFilters();
+                    setIsFilterModalOpen(false);
+                  }}
+                  style={{ minHeight: '40px', padding: '0 14px', fontSize: '13px' }}
+                >
+                  Limpiar filtros
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  handleApplyFilters();
+                  setIsFilterModalOpen(false);
+                }}
+                style={{ flex: 1, minHeight: '40px', padding: '0 18px', fontSize: '14px', justifyContent: 'center' }}
+              >
+                Aplicar filtros
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
