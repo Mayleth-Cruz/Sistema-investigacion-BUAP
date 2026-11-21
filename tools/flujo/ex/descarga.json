@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "message": "Descarga registrada correctamente en la base de datos.",
+  "data": {
+    "id": 1,
+    "descargas": 117
+  }
+}

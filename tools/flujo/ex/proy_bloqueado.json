@@ -1,0 +1,9 @@
+{
+  "success": false,
+  "message": "El proyecto no se puede modificar en su estado actual. Solo se editan o eliminan proyectos en borrador o devueltos.",
+  "errors": {
+    "codigo": [
+      "proyecto_bloqueado"
+    ]
+  }
+}

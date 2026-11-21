@@ -894,9 +894,21 @@ tr:hover td {
 
 @media (min-width: 821px) {
   .login-page-wrapper {
-    height: calc(100vh - 69px);
-    height: calc(100dvh - 69px);
+    /* flex: none para que 'height' sea definida y los paneles (height: 100%)
+       ocupen todo el alto; con flex: 1 el alto porcentual no se resolvía y la
+       imagen y la columna del formulario quedaban a la altura de su contenido. */
+    flex: none;
+    height: calc(100vh - var(--nav-h, 73px));
+    height: calc(100dvh - var(--nav-h, 73px));
+    min-height: 0;
     overflow: hidden;
+  }
+}
+
+/* Alto real del encabezado: 73px en escritorio; 69px con menú hamburguesa */
+@media (min-width: 821px) and (max-width: 860px) {
+  .login-page-wrapper {
+    --nav-h: 69px;
   }
 }
 
@@ -1441,5 +1453,1094 @@ tr:hover td {
   .login-submit-button {
     min-height: 40px;
     padding: 9px 16px;
+  }
+}
+
+/* ============================================================================
+ * EJE 3 · INVESTIGACIÓN (Registro, Monitoreo, Visualizar, Difundir)
+ * Todas las reglas llevan el prefijo "eje3-" para no afectar a otras pantallas.
+ * ============================================================================ */
+
+/* --- Menú: grupo del Eje 3 ------------------------------------------------ */
+.side h3.eje3-side-heading {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #BAE6FD;
+  margin: 22px 0 10px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.eje3-mobile-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748B;
+  margin: 18px 0 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* --- Estructura de pantallas --------------------------------------------- */
+.eje3-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.eje3-page-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.eje3-public-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 40px 48px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.eje3-section-title {
+  font-size: 18px;
+  color: var(--buap-blue-302);
+  margin: 8px 0 14px;
+}
+
+.eje3-two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* --- Notificaciones y modales -------------------------------------------- */
+.eje3-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.eje3-notice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.eje3-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 27, 58, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.eje3-modal-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 28px 32px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.eje3-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 14px;
+}
+
+.eje3-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #E2E8F0;
+}
+
+.eje3-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.eje3-icon-btn:hover {
+  background: #F1F5F9;
+}
+
+/* --- Formularios ---------------------------------------------------------- */
+.eje3-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.eje3-field {
+  min-width: 0;
+}
+
+.eje3-field-full {
+  grid-column: 1 / -1;
+}
+
+.eje3-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.eje3-check input[type="checkbox"] {
+  width: 18px;
+  min-height: 0;
+  height: 18px;
+  padding: 0;
+  flex-shrink: 0;
+  accent-color: var(--buap-blue-302);
+}
+
+.eje3-apartado-item {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #F8FAFC;
+}
+
+/* --- Barra de herramientas de tablas ------------------------------------- */
+.eje3-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.eje3-search {
+  flex: 1 1 260px;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.eje3-search svg {
+  position: absolute;
+  left: 12px;
+  pointer-events: none;
+}
+
+.eje3-search input {
+  padding-left: 36px;
+}
+
+.eje3-filter {
+  flex: 0 1 220px;
+  min-width: 160px;
+}
+
+.eje3-link-btn {
+  background: none;
+  border: none;
+  color: var(--buap-blue-302);
+  font-family: var(--font-source);
+  font-weight: 600;
+  font-size: 14.5px;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.eje3-link-btn:hover {
+  color: var(--buap-cyan-306);
+  text-decoration: underline;
+}
+
+.eje3-link-danger {
+  color: #9B1C1C;
+}
+
+.eje3-link-danger:hover {
+  color: #DC2626;
+}
+
+/* --- Hub del Registro ----------------------------------------------------- */
+.eje3-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.eje3-hub-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-source);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.eje3-hub-card:hover,
+.eje3-hub-card:focus-visible {
+  border-color: var(--buap-cyan-306);
+  box-shadow: 0 4px 14px rgba(0, 59, 92, 0.12);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.eje3-hub-count {
+  font-size: 34px;
+  line-height: 1;
+  color: var(--buap-blue-302);
+}
+
+.eje3-hub-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.eje3-hub-desc {
+  font-size: 13.5px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.eje3-hub-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--buap-blue-302);
+  margin-top: 6px;
+}
+
+/* --- Indicadores ---------------------------------------------------------- */
+.eje3-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.eje3-kpi {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.eje3-kpi-main {
+  border-top: 4px solid var(--buap-cyan-306);
+}
+
+.eje3-kpi-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.eje3-kpi-value {
+  font-size: 40px;
+  line-height: 1.05;
+  color: var(--buap-blue-302);
+}
+
+.eje3-kpi-toggle {
+  margin-top: 6px;
+  font-size: 13.5px;
+}
+
+.eje3-detail-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border-light);
+}
+
+.eje3-detail-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-table-row);
+  font-size: 14px;
+}
+
+.eje3-summary {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.eje3-summary dt {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.eje3-summary dd {
+  margin: 2px 0 0;
+  font-family: var(--font-gotham);
+  font-weight: 900;
+  font-size: 26px;
+  color: var(--buap-blue-302);
+}
+
+/* --- Gráficas (CSS) ------------------------------------------------------- */
+.eje3-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eje3-bar-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+}
+
+.eje3-bar-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.eje3-bar-track {
+  display: block;
+  height: 14px;
+  background: #EEF3F1;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.eje3-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  min-width: 2px;
+  transition: width 0.4s ease;
+}
+
+.eje3-bar-value {
+  font-weight: 700;
+  font-size: 14px;
+  text-align: right;
+  color: var(--text-dark);
+}
+
+.eje3-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.eje3-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eje3-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.eje3-columns {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 220px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.eje3-column {
+  flex: 1 0 44px;
+  max-width: 90px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.eje3-column-total {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.eje3-column-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  min-height: 3px;
+}
+
+.eje3-column-label {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* --- Difusión / eventos --------------------------------------------------- */
+.eje3-event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.eje3-next-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  border-left: 4px solid var(--buap-cyan-306);
+}
+
+.eje3-next-date {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--buap-blue-302);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.eje3-event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eje3-event-card {
+  padding: 22px;
+}
+
+.eje3-event-title {
+  font-size: 19px;
+  margin: 0 0 8px;
+  color: var(--buap-blue-302);
+}
+
+.eje3-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.eje3-event-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eje3-event-desc {
+  margin: 10px 0 0;
+  line-height: 1.55;
+  font-size: 15px;
+  color: var(--text-dark);
+}
+
+.eje3-event-counts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.eje3-proyectos {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.eje3-proyectos-title {
+  font-family: var(--font-source);
+  font-weight: 800;
+  font-size: 14.5px;
+  margin: 0 0 8px;
+  color: var(--text-dark);
+}
+
+.eje3-proyecto {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: #ffffff;
+}
+
+.eje3-proyecto summary {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style-position: inside;
+}
+
+.eje3-proyecto-title {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.eje3-proyecto-author {
+  font-size: 13px;
+  font-style: italic;
+}
+
+.eje3-apartados-view {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-light);
+}
+
+.eje3-apartados-view h5 {
+  margin: 0 0 4px;
+  font-family: var(--font-source);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--buap-blue-302);
+}
+
+.eje3-apartados-view p {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.eje3-pub-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 20px;
+}
+
+.eje3-pub-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-table-row);
+}
+
+.eje3-pub-list li:last-child {
+  border-bottom: none;
+}
+
+.eje3-preview {
+  border-top: 2px solid var(--border-light);
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- Interruptor de publicación ------------------------------------------ */
+.eje3-switch {
+  width: 42px;
+  height: 24px;
+  border-radius: 99px;
+  border: none;
+  background: #CBD5E1;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  vertical-align: middle;
+  transition: background 0.15s ease;
+}
+
+.eje3-switch.on {
+  background: var(--buap-blue-302);
+}
+
+.eje3-switch:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.eje3-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.15s ease;
+}
+
+.eje3-switch.on .eje3-switch-knob {
+  transform: translateX(18px);
+}
+
+.eje3-switch-text {
+  margin-left: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+
+/* --- Encabezado público: que los enlaces nuevos quepan entre 861 y 1180 px - */
+@media (max-width: 1180px) and (min-width: 861px) {
+  .nav {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .nav-links {
+    gap: 14px;
+  }
+  .nav a.nav-link {
+    font-size: 14px;
+  }
+  .nav .nav-brand-sub {
+    display: none;
+  }
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+@media (max-width: 860px) {
+  .eje3-public-wrap {
+    padding: 20px 16px 36px;
+    gap: 18px;
+  }
+  .eje3-modal-card {
+    padding: 20px 18px;
+  }
+  .eje3-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .eje3-filter {
+    flex: 1 1 100%;
+  }
+  .eje3-bar-row {
+    grid-template-columns: 96px 1fr 38px;
+  }
+  .eje3-kpi-value {
+    font-size: 34px;
+  }
+  .eje3-modal-actions {
+    flex-direction: column-reverse;
+  }
+  .eje3-modal-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .eje3-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .eje3-page-header h1 {
+    font-size: 24px !important;
+  }
+}
+
+/* ============================================================================
+ * ROL DOCENTE Y REVISIÓN DE PROYECTOS
+ * Todas las reglas llevan el prefijo "docente-" para no afectar otras pantallas.
+ * ============================================================================ */
+
+/* --- Menú ---------------------------------------------------------------- */
+.docente-side-user {
+  margin: -12px 0 14px;
+  padding-left: 8px;
+  font-family: var(--font-source);
+  font-size: 13px;
+  color: #BAE6FD;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.side a.docente-nav-disabled,
+.mobile-nav-item.docente-nav-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.side a.docente-nav-disabled:hover {
+  background: transparent;
+  color: #DCE8E6;
+}
+
+.docente-badge {
+  margin-left: auto;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  box-sizing: border-box;
+  border-radius: 99px;
+  background: var(--buap-cyan-306);
+  color: #002840;
+  font-family: var(--font-source);
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 22px;
+  text-align: center;
+}
+
+/* --- Etiquetas de estado de registro ------------------------------------- */
+.tag.docente-estado {
+  font-size: 12.5px;
+  padding: 3px 11px;
+}
+
+.tag.docente-estado-borrador {
+  background: #EEF1F4;
+  color: #475569;
+}
+
+.tag.docente-estado-enviado {
+  background: #FFF4D6;
+  color: #7A5200;
+}
+
+.tag.docente-estado-aprobado {
+  background: #E3F4E8;
+  color: #17603A;
+}
+
+.tag.docente-estado-devuelto {
+  background: #FDE8E8;
+  color: #9B1C1C;
+}
+
+/* --- Mi espacio ---------------------------------------------------------- */
+.docente-estado-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.docente-estado-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  cursor: pointer;
+  border-top: 4px solid var(--border-light);
+  font-family: var(--font-source);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.docente-estado-card:hover,
+.docente-estado-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 43, 73, 0.12);
+  outline: none;
+}
+
+.docente-estado-card-borrador { border-top-color: #94A3B8; }
+.docente-estado-card-enviado { border-top-color: #E0A100; }
+.docente-estado-card-aprobado { border-top-color: #2E9E5B; }
+.docente-estado-card-devuelto { border-top-color: #DC2626; }
+
+.docente-estado-count {
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--buap-blue-302);
+}
+
+.docente-estado-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.docente-datos {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px 24px;
+}
+
+.docente-datos dt {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+.docente-datos dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  color: var(--text-dark);
+  overflow-wrap: anywhere;
+}
+
+.docente-reciente-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.docente-reciente-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-table-row);
+}
+
+.docente-reciente-list li:last-child {
+  border-bottom: none;
+}
+
+.docente-reciente-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.docente-reciente-main strong {
+  overflow-wrap: anywhere;
+}
+
+.docente-reciente-comentario {
+  font-size: 13.5px;
+  color: #9B1C1C;
+}
+
+.eje3-pub-list.docente-pub-list {
+  padding: 0;
+}
+
+/* --- Mis proyectos / bandeja de revisión --------------------------------- */
+.docente-proyectos-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.docente-proyecto {
+  border: 1px solid var(--border-light);
+  border-left: 4px solid #94A3B8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.docente-proyecto[data-estado="enviado"] { border-left-color: #E0A100; }
+.docente-proyecto[data-estado="aprobado"] { border-left-color: #2E9E5B; }
+.docente-proyecto[data-estado="devuelto"] { border-left-color: #DC2626; }
+
+.docente-proyecto-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.docente-proyecto-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.docente-proyecto-titulo strong {
+  font-size: 16.5px;
+  color: var(--text-dark);
+  overflow-wrap: anywhere;
+}
+
+.docente-proyecto-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  font-size: 13.5px;
+}
+
+.docente-proyecto-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.docente-proyecto-acciones .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.docente-comentario {
+  background: #FFF8E5;
+  border-left: 4px solid #E0A100;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 14.5px;
+  color: #5B4300;
+}
+
+.docente-proyecto .docente-comentario {
+  margin-bottom: 0;
+}
+
+.docente-comentario strong {
+  display: block;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.docente-comentario p {
+  margin: 4px 0 0;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.docente-bloqueo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.docente-bloqueo svg {
+  flex-shrink: 0;
+}
+
+.docente-vacio {
+  text-align: center;
+  padding: 32px 12px;
+  margin: 0;
+}
+
+/* --- Formularios de cuenta ------------------------------------------------ */
+.docente-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.docente-password-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1.5px dashed var(--buap-cyan-306);
+  border-radius: 8px;
+  background: #F4FAFD;
+}
+
+.docente-password-box code {
+  flex: 1 1 170px;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--buap-blue-302);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.docente-password-box .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+  .docente-estado-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .docente-proyecto-head {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .docente-password-box {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .docente-estado-count {
+    font-size: 28px;
+  }
+  .docente-proyecto-acciones .btn {
+    width: 100%;
+    justify-content: center;
   }
 }

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "message": "Autenticación exitosa. Bienvenido a tu espacio de docente.",
+  "data": {
+    "token": "<64 caracteres hex>",
+    "user": {
+      "id": 3,
+      "nombre": "Alejandro Morales Juárez",
+      "correo": "alejandro.morales.ju.rez.50@investigacion.buap.mx",
+      "cargo": "Investigador / Autor Adscrito",
+      "rol": "investigador",
+      "investigador_id": 6,
+      "debe_cambiar_password": 1
+    }
+  }
+}

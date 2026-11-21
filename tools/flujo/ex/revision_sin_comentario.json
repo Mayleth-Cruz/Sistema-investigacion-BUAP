@@ -1,0 +1,9 @@
+{
+  "success": false,
+  "message": "Datos de revisión inválidos.",
+  "errors": {
+    "comentario": [
+      "Para devolver un proyecto debes escribir un comentario (mínimo 3 caracteres)."
+    ]
+  }
+}

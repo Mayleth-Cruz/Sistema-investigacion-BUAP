@@ -3,13 +3,14 @@ import { authService } from '../../services/authService';
 
 /**
  * ============================================================================
- * SCREEN: LOGIN ADMINISTRATIVO INSTITUCIONAL BUAP (ACCESO SEGURO)
+ * SCREEN: LOGIN INSTITUCIONAL BUAP (ADMINISTRADOR Y DOCENTE)
  * ============================================================================
  * Implementa las mejores prácticas de seguridad solicitadas:
  * - Validación estricta de formato de correo institucional.
  * - Validación obligatoria de contraseña con longitud mínima de 8 caracteres.
  * - Conexión directa con el backend PHP (/api/auth/login).
- * - Restricción de acceso: Solo usuarios con rol de Administrador.
+ * - Restricción de acceso: solo Administrador y Docente; la aplicación enruta
+ *   según el rol (admin → panel, docente → Mi espacio).
  * - Protección contra ataques de fuerza bruta y respuestas de error seguras.
  */
 export default function LoginScreen({ onLoginSuccess }) {
@@ -51,7 +52,7 @@ export default function LoginScreen({ onLoginSuccess }) {
     setLoading(true);
 
     try {
-      // 3. Autenticación contra el backend PHP con verificación de rol de administrador
+      // 3. Autenticación contra el backend PHP (administrador o docente)
       const result = await authService.login(cleanEmail, password);
 
       if (result.success) {
@@ -106,7 +107,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                 Iniciar Sesión
               </h1>
               <p className="subtitulo-gotham-book login-subtitle">
-                Acceso Administrativo · Repositorio de Investigación
+                Acceso institucional · Repositorio de Investigación
               </p>
             </div>
 
@@ -189,7 +190,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                   href="#recuperar" 
                   onClick={(e) => { 
                     e.preventDefault(); 
-                    alert('Para restablecer tu acceso institucional, contacta a la mesa de ayuda VIEP o a la DGCTIC.'); 
+                    alert('Para restablecer tu acceso, solicita al administrador del sistema una contraseña temporal.'); 
                   }}
                   className="login-forgot-link"
                 >
@@ -213,7 +214,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                   href="#registro" 
                   onClick={(e) => {
                     e.preventDefault();
-                    alert('El alta de investigadores se realiza a través de la convocatoria interna de la Dirección de Investigación VIEP.');
+                    alert('Las cuentas de docentes las crea el administrador del sistema. Solicítala a la Dirección de Investigación.');
                   }}
                   className="login-register-link"
                 >

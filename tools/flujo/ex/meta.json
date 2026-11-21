@@ -1,0 +1,9 @@
+{
+  "evento_id": 1,
+  "proyecto_id": 16,
+  "docente_id": 6,
+  "visualizar_proyectos_antes": 12,
+  "visualizar_proyectos_despues": 13,
+  "difusion_cambio": true,
+  "total_rutas_ok": true
+}

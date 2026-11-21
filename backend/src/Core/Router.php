@@ -128,10 +128,16 @@ class Router {
             }
         } catch (\PDOException $e) {
             // Manejo amigable de errores de Base de Datos
-            Response::serverError("Error en base de datos: " . $e->getMessage());
+            error_log('[SI3] Error de base de datos: ' . $e->getMessage());
+            Response::serverError(
+                Response::isDebug() ? "Error en base de datos: " . $e->getMessage() : 'Ocurrió un error interno en el servidor.'
+            );
         } catch (\Throwable $e) {
             // Manejo de cualquier otra excepción imprevista
-            Response::serverError("Excepción capturada: " . $e->getMessage());
+            error_log('[SI3] Excepción no controlada: ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
+            Response::serverError(
+                Response::isDebug() ? "Excepción capturada: " . $e->getMessage() : 'Ocurrió un error interno en el servidor.'
+            );
         }
     }
 }

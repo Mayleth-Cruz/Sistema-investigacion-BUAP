@@ -6,9 +6,30 @@ import {
   IconTag, 
   IconMenu, 
   IconX,
-  IconArrowLeft 
+  IconArrowLeft,
+  IconClipboard,
+  IconActivity,
+  IconMicrophone,
+  IconUsers,
+  IconCheckCircle
 } from './Icons';
 import BUAPLogo from './BUAPLogo';
+import { authService } from '../services/authService';
+import { eje3Service } from '../services/eje3Service';
+
+// Grupo "Eje 3 · Investigación": Registrar, Monitorear, Visualizar y Difundir
+const EJE3_ITEMS = [
+  { nav: 'eje3-registro', view: 'admin-eje3-registro', label: 'Registro', title: 'Eje 3 · Registro', Icon: IconClipboard },
+  { nav: 'eje3-monitoreo', view: 'admin-eje3-monitoreo', label: 'Monitoreo', title: 'Eje 3 · Monitoreo', Icon: IconActivity },
+  { nav: 'eje3-visualizar', view: 'admin-eje3-visualizar', label: 'Visualizar', title: 'Eje 3 · Visualizar', Icon: IconChart },
+  { nav: 'eje3-difundir', view: 'admin-eje3-difundir', label: 'Difundir', title: 'Eje 3 · Difundir', Icon: IconMicrophone }
+];
+
+// Grupo "Docentes": cuentas de docentes y revisión de sus proyectos
+const DOCENTES_ITEMS = [
+  { nav: 'docentes-usuarios', view: 'admin-docentes-usuarios', label: 'Usuarios docentes', title: 'Docentes · Usuarios', Icon: IconUsers },
+  { nav: 'docentes-revision', view: 'admin-docentes-revision', label: 'Revisión de proyectos', title: 'Docentes · Revisión', Icon: IconCheckCircle }
+];
 
 /**
  * ============================================================================
@@ -20,8 +41,39 @@ import BUAPLogo from './BUAPLogo';
  *   todo el contenido del panel (métricas, tablas, formularios) se adapte
  *   al 100% del ancho de la pantalla de un celular.
  */
-export default function AdminSidebar({ activeNav = 'panel', onNavigate, onUploadClick }) {
+export default function AdminSidebar({ activeNav = 'panel', onNavigate, onUploadClick, pendientes }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Contador de proyectos enviados por docentes. Si la pantalla ya lo conoce
+  // lo recibe en `pendientes`; si no, se consulta GET /eje3/revision. Si la
+  // consulta falla no se muestra el distintivo.
+  const [fetchedPendientes, setFetchedPendientes] = useState(null);
+  useEffect(() => {
+    if (pendientes !== undefined || !authService.getToken()) return undefined;
+    let cancelled = false;
+    // Se difiere un instante para no competir con la carga de la propia pantalla
+    const timer = setTimeout(() => {
+      Promise.resolve(eje3Service.revision())
+        .then((data) => {
+          if (!cancelled && data && Number.isFinite(Number(data.pendientes))) {
+            setFetchedPendientes(Number(data.pendientes));
+          }
+        })
+        .catch(() => {});
+    }, 0);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [pendientes]);
+  const pendientesCount = pendientes !== undefined ? pendientes : fetchedPendientes;
+  const showBadge = Number(pendientesCount) > 0;
+  const badgeFor = (nav) =>
+    nav === 'docentes-revision' && showBadge ? (
+      <span className="docente-badge" aria-label={`${pendientesCount} pendientes`}>
+        {pendientesCount}
+      </span>
+    ) : null;
 
   const getTitle = () => {
     switch (activeNav) {
@@ -29,6 +81,12 @@ export default function AdminSidebar({ activeNav = 'panel', onNavigate, onUpload
       case 'subir': return 'Subir artículo';
       case 'autores': return 'Directorio de autores';
       case 'categorias': return 'Categorías y áreas';
+      case 'eje3-registro': return 'Eje 3 · Registro';
+      case 'eje3-monitoreo': return 'Eje 3 · Monitoreo';
+      case 'eje3-visualizar': return 'Eje 3 · Visualizar';
+      case 'eje3-difundir': return 'Eje 3 · Difundir';
+      case 'docentes-usuarios': return 'Docentes · Usuarios';
+      case 'docentes-revision': return 'Docentes · Revisión';
       default: return 'Administración';
     }
   };
@@ -132,6 +190,35 @@ export default function AdminSidebar({ activeNav = 'panel', onNavigate, onUpload
           <IconTag size={16} />
           <span>Categorías</span>
         </a>
+
+        <h3 className="encabezado-source-black eje3-side-heading">
+          Eje 3 · Investigación
+        </h3>
+        {EJE3_ITEMS.map(({ nav, view, label, Icon }) => (
+          <a
+            key={nav}
+            className={activeNav === nav ? 'on' : ''}
+            onClick={() => handleItemClick(view)}
+          >
+            <Icon size={16} />
+            <span>{label}</span>
+          </a>
+        ))}
+
+        <h3 className="encabezado-source-black eje3-side-heading">
+          Docentes
+        </h3>
+        {DOCENTES_ITEMS.map(({ nav, view, label, Icon }) => (
+          <a
+            key={nav}
+            className={activeNav === nav ? 'on' : ''}
+            onClick={() => handleItemClick(view)}
+          >
+            <Icon size={16} />
+            <span>{label}</span>
+            {badgeFor(nav)}
+          </a>
+        ))}
       </aside>
 
       {/* 3. Sidebar Móvil Flotante / Drawer (Slide-in) */}
@@ -206,6 +293,43 @@ export default function AdminSidebar({ activeNav = 'panel', onNavigate, onUpload
                   <IconTag size={18} color={activeNav === 'categorias' ? 'var(--buap-blue-302)' : '#64748B'} />
                   <span>Categorías y Áreas</span>
                 </button>
+              </nav>
+
+              <div className="eje3-mobile-group-label">
+                Eje 3 · Investigación
+              </div>
+
+              <nav className="mobile-nav-links">
+                {EJE3_ITEMS.map(({ nav, view, label, Icon }) => (
+                  <button
+                    key={nav}
+                    type="button"
+                    className={`mobile-nav-item ${activeNav === nav ? 'active' : ''}`}
+                    onClick={() => handleItemClick(view)}
+                  >
+                    <Icon size={18} color={activeNav === nav ? 'var(--buap-blue-302)' : '#64748B'} />
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </nav>
+
+              <div className="eje3-mobile-group-label">
+                Docentes
+              </div>
+
+              <nav className="mobile-nav-links">
+                {DOCENTES_ITEMS.map(({ nav, view, label, Icon }) => (
+                  <button
+                    key={nav}
+                    type="button"
+                    className={`mobile-nav-item ${activeNav === nav ? 'active' : ''}`}
+                    onClick={() => handleItemClick(view)}
+                  >
+                    <Icon size={18} color={activeNav === nav ? 'var(--buap-blue-302)' : '#64748B'} />
+                    <span>{label}</span>
+                    {badgeFor(nav)}
+                  </button>
+                ))}
               </nav>
 
               <div className="mobile-sidebar-divider" />

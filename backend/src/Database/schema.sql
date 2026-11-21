@@ -32,11 +32,36 @@ CREATE TABLE `investigadores` (
     `biografia` TEXT DEFAULT NULL COMMENT 'Resumen del perfil científico y trayectoria',
     `avatar_url` VARCHAR(255) DEFAULT NULL COMMENT 'URL o ruta de la foto de perfil del investigador',
     `activo` TINYINT(1) DEFAULT 1 COMMENT '1 = Activo, 0 = Inactivo o retirado',
+    `snii_nivel` VARCHAR(20) DEFAULT NULL COMMENT 'Nivel SNII: NULL, Candidato, I, II o III',
+    `snii_elegible` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 = marcado manualmente como elegible al SNII',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_investigador_orcid` (`orcid`),
     INDEX `idx_investigador_afiliacion` (`afiliacion`),
     INDEX `idx_investigador_linea` (`linea_investigacion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- TABLA EJE 3: EVENTOS DE INVESTIGACIÓN
+-- Encuentros de semilleros, congresos y convocatorias de la revista PYAD.
+-- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `eventos_investigacion`;
+CREATE TABLE `eventos_investigacion` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(250) NOT NULL COMMENT 'Nombre oficial del evento',
+    `tipo` ENUM('semilleros', 'congreso', 'revista_pyad', 'otro') NOT NULL COMMENT 'Clasificación para el portal de difusión',
+    `edicion` VARCHAR(50) DEFAULT NULL COMMENT 'Edición o año (ej: 2026)',
+    `fecha_inicio` DATE DEFAULT NULL,
+    `fecha_fin` DATE DEFAULT NULL,
+    `sede` VARCHAR(200) DEFAULT NULL,
+    `descripcion` TEXT DEFAULT NULL,
+    `estado` ENUM('programado', 'en_curso', 'concluido') NOT NULL DEFAULT 'programado',
+    `publico` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = visible en el portal público, 0 = solo administración',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_evento_tipo` (`tipo`),
+    INDEX `idx_evento_estado` (`estado`),
+    INDEX `idx_evento_fecha` (`fecha_inicio`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -57,11 +82,27 @@ CREATE TABLE `proyectos` (
     `presupuesto` DECIMAL(14, 2) NOT NULL DEFAULT 0.00 COMMENT 'Monto económico asignado en moneda local o USD',
     `entidad_financiadora` VARCHAR(150) DEFAULT 'Fondos Internos Institucionales' COMMENT 'Organismo financiador (ej: Conacyt, Minciencias, Fondos Propios)',
     `linea_investigacion` VARCHAR(150) NOT NULL COMMENT 'Área temática del proyecto',
+    `tipo` ENUM('investigacion', 'semillero', 'titulacion') NOT NULL DEFAULT 'investigacion' COMMENT 'Clasificación del Eje 3',
+    `evento_id` INT DEFAULT NULL COMMENT 'Evento donde se presenta el proyecto (opcional)',
+    `articulado_civ` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 = proyecto de titulación articulado al CIV',
+    `registro_estado` ENUM('borrador', 'enviado', 'aprobado', 'devuelto') NOT NULL DEFAULT 'aprobado' COMMENT 'Flujo de revisión del rol docente; lo capturado por el administrador queda aprobado',
+    `comentario_revision` TEXT DEFAULT NULL COMMENT 'Comentario del revisor (obligatorio al devolver)',
+    `enviado_en` DATETIME DEFAULT NULL COMMENT 'Fecha en que el docente envió el proyecto a revisión',
+    `revisado_en` DATETIME DEFAULT NULL COMMENT 'Fecha de la última revisión del administrador',
+    `revisado_por` INT DEFAULT NULL COMMENT 'Usuario administrador que revisó',
+    `creado_por_usuario_id` INT DEFAULT NULL COMMENT 'Usuario (docente) que registró el proyecto',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`investigador_principal_id`) REFERENCES `investigadores`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT `fk_proyecto_evento` FOREIGN KEY (`evento_id`) REFERENCES `eventos_investigacion`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `fk_proyecto_revisado_por` FOREIGN KEY (`revisado_por`) REFERENCES `usuarios`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `fk_proyecto_creado_por` FOREIGN KEY (`creado_por_usuario_id`) REFERENCES `usuarios`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
     INDEX `idx_proyecto_estado` (`estado`),
-    INDEX `idx_proyecto_linea` (`linea_investigacion`)
+    INDEX `idx_proyecto_linea` (`linea_investigacion`),
+    INDEX `idx_proyecto_tipo` (`tipo`),
+    INDEX `idx_proyecto_evento` (`evento_id`),
+    INDEX `idx_proyecto_registro` (`registro_estado`),
+    INDEX `idx_proyecto_investigador` (`investigador_principal_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -94,10 +135,13 @@ CREATE TABLE `publicaciones` (
     `evento` VARCHAR(255) DEFAULT NULL COMMENT 'Nombre del evento científico o congreso donde se presentó/publicó',
     `estado` ENUM('publicado', 'borrador') NOT NULL DEFAULT 'publicado' COMMENT 'Estado de publicación',
     `proyecto_id` INT DEFAULT NULL COMMENT 'Proyecto de origen del cual se deriva este producto (opcional)',
+    `origen` ENUM('evento', 'revista_pyad', 'otra') NOT NULL DEFAULT 'otra' COMMENT 'Origen de la publicación para el Eje 3',
+    `evento_id` INT DEFAULT NULL COMMENT 'Evento de investigación del que resulta la publicación',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`investigador_id`) REFERENCES `investigadores`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (`proyecto_id`) REFERENCES `proyectos`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `fk_publicacion_evento` FOREIGN KEY (`evento_id`) REFERENCES `eventos_investigacion`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
     INDEX `idx_publicacion_anio` (`anio`),
     INDEX `idx_publicacion_cuartil` (`cuartil`),
     INDEX `idx_publicacion_indexacion` (`indexacion`),
@@ -109,7 +153,9 @@ CREATE TABLE `publicaciones` (
     INDEX `idx_publicacion_titulo` (`titulo`(150)),
     INDEX `idx_publicacion_autores` (`autores`(150)),
     INDEX `idx_publicacion_estado_anio` (`estado`, `anio`),
-    INDEX `idx_publicacion_estado_area` (`estado`, `area_conocimiento`(100))
+    INDEX `idx_publicacion_estado_area` (`estado`, `area_conocimiento`(100)),
+    INDEX `idx_publicacion_origen` (`origen`),
+    INDEX `idx_publicacion_evento_id` (`evento_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -151,8 +197,12 @@ CREATE TABLE `usuarios` (
     `intentos_fallidos` INT NOT NULL DEFAULT 0 COMMENT 'Contador de intentos fallidos de login',
     `bloqueado_hasta` DATETIME DEFAULT NULL COMMENT 'Fecha hasta la cual la cuenta está bloqueada temporalmente',
     `ultimo_acceso` DATETIME DEFAULT NULL COMMENT 'Fecha y hora del último acceso exitoso',
+    `investigador_id` INT DEFAULT NULL COMMENT 'Ficha de investigador ligada (cuenta de docente); una cuenta por docente',
+    `debe_cambiar_password` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 = contraseña temporal: debe cambiarla en su primer ingreso',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_usuario_investigador` FOREIGN KEY (`investigador_id`) REFERENCES `investigadores`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    UNIQUE INDEX `uq_usuario_investigador` (`investigador_id`),
     INDEX `idx_usuario_correo` (`correo`),
     INDEX `idx_usuario_rol` (`rol`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -178,4 +228,96 @@ CREATE TABLE `categorias` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Reactivamos la verificación de llaves foráneas
+-- ----------------------------------------------------------------------------
+-- TABLA EJE 3: APARTADOS ANEXOS DE PROYECTOS
+-- Secciones (título + contenido) que acompañan a un proyecto presentado en un evento.
+-- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `proyecto_apartados`;
+CREATE TABLE `proyecto_apartados` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `proyecto_id` INT NOT NULL,
+    `apartado` VARCHAR(200) NOT NULL COMMENT 'Título de la sección',
+    `contenido` TEXT DEFAULT NULL,
+    `orden` INT NOT NULL DEFAULT 0,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`proyecto_id`) REFERENCES `proyectos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX `idx_apartado_proyecto` (`proyecto_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- TABLA EJE 3: PARTICIPANTES DE EVENTO
+-- Bases de dictaminadores, moderadores, relatores y dictaminadores de la revista PYAD.
+-- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `participantes_evento`;
+CREATE TABLE `participantes_evento` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `rol` ENUM('dictaminador', 'moderador', 'relator', 'dictaminador_pyad') NOT NULL,
+    `nombre_completo` VARCHAR(150) NOT NULL,
+    `correo` VARCHAR(120) DEFAULT NULL,
+    `institucion` VARCHAR(200) DEFAULT NULL,
+    `especialidad` VARCHAR(200) DEFAULT NULL,
+    `evento_id` INT DEFAULT NULL,
+    `activo` TINYINT(1) NOT NULL DEFAULT 1,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`evento_id`) REFERENCES `eventos_investigacion`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    INDEX `idx_participante_rol` (`rol`),
+    INDEX `idx_participante_evento` (`evento_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- TABLA EJE 3: RETRIBUCIÓN SOCIAL (MPYMES, MGT, MDGE)
+-- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `retribucion_social`;
+CREATE TABLE `retribucion_social` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `programa` ENUM('MPYMES', 'MGT', 'MDGE') NOT NULL,
+    `tipo_participante` ENUM('estudiante', 'profesor') NOT NULL,
+    `nombre_participante` VARCHAR(150) NOT NULL,
+    `actividad` VARCHAR(250) NOT NULL,
+    `institucion_beneficiada` VARCHAR(200) DEFAULT NULL,
+    `horas` INT DEFAULT 0,
+    `fecha` DATE DEFAULT NULL,
+    `periodo` VARCHAR(50) DEFAULT NULL,
+    `descripcion` TEXT DEFAULT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_retribucion_programa` (`programa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- TABLA EJE 3: ACTIVIDADES DE EGRESADOS DE POSGRADO
+-- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `actividades_egresados`;
+CREATE TABLE `actividades_egresados` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `programa` VARCHAR(100) DEFAULT NULL,
+    `nombre_egresado` VARCHAR(150) NOT NULL,
+    `generacion` VARCHAR(50) DEFAULT NULL,
+    `actividad` VARCHAR(250) NOT NULL,
+    `tipo` ENUM('empleo', 'emprendimiento', 'publicacion', 'posgrado', 'otro') NOT NULL,
+    `institucion` VARCHAR(200) DEFAULT NULL,
+    `fecha` DATE DEFAULT NULL,
+    `descripcion` TEXT DEFAULT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_egresado_tipo` (`tipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- TABLA EJE 3: SESIONES DE AUTENTICACIÓN
+-- Guarda el hash SHA-256 del token Bearer (nunca el token) con expiración de 8 horas.
+-- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `sesiones`;
+CREATE TABLE `sesiones` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `usuario_id` INT NOT NULL,
+    `token_hash` CHAR(64) NOT NULL UNIQUE COMMENT 'SHA-256 hexadecimal del token',
+    `expira_en` DATETIME NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX `idx_sesion_usuario` (`usuario_id`),
+    INDEX `idx_sesion_expira` (`expira_en`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

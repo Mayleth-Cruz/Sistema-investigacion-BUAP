@@ -25,6 +25,9 @@ Bienvenido a la **Guía Maestra y Documentación Técnica del Proyecto**. Este d
 10. [Diseño Visual, Tipografía Institucional y Cero Emojis](#10-diseño-visual-tipografía-institucional-y-cero-emojis)
 11. [¿Cómo Poner en Marcha el Proyecto?](#11-cómo-poner-en-marcha-el-proyecto)
 12. [Preguntas Frecuentes y Decisiones Técnicas (El "Porqué" de las Cosas)](#12-preguntas-frecuentes-y-decisiones-técnicas-el-porqué-de-las-cosas)
+13. [Despliegue gratuito](#13-guía-paso-a-paso-para-subir-el-proyecto-a-un-servidor-gratuito)
+14. [Eje 3 · Investigación Aplicada con Impacto Social](#14-eje-3--investigación-aplicada-con-impacto-social-registrar-monitorear-visualizar-difundir)
+15. [Rol Docente: los maestros registran sus proyectos](#15-rol-docente-los-maestros-registran-sus-proyectos)
 
 ---
 
@@ -210,7 +213,7 @@ Antes de enviar cualquier dato por la red, la interfaz realiza comprobaciones in
 
 ### Credenciales de Acceso Administrativo Preconfiguradas:
 - **Correo:** `admin@buap.mx`
-- **Contraseña:** `admin123` *(también se admite `Admin2026*`)*
+- **Contraseña:** `admin123` *(solo demo; ya no existe contraseña de respaldo en el código. Cámbiala antes de publicar.)*
 - **Rol:** `administrador` (Dra. María Elena Ramos - Administradora de Investigación VIEP)
 
 ---
@@ -683,6 +686,86 @@ git push origin main
 - **Diferencia entre código y datos:**
   - Si un usuario o administrador sube un artículo o descarga un PDF **desde la página web**, eso se guarda en la base de datos en vivo de inmediato; **no** requiere hacer `git push`.
   - El `git push` solo se usa cuando modificas el **código fuente** (archivos `.jsx`, `.css`, `.php`, etc.).
+
+## 14. Eje 3 · Investigación Aplicada con Impacto Social (Registrar, Monitorear, Visualizar, Difundir)
+
+**Estrategia 3: Fortalecimiento de Posgrado e Investigación.** Objetivo: un sistema integral de información que permita registrar, monitorear, visualizar y difundir de manera sistemática la producción académica y científica de la Facultad.
+
+### Dónde está cada función
+
+| Función | Quién la ve | Pantalla | Endpoint(s) |
+|---|---|---|---|
+| **Registro** (10 catálogos + titulación CIV) | Solo administrador | Administración → *Eje 3 · Registro* | `/api/eje3/proyectos`, `/participantes`, `/retribucion-social`, `/egresados`, `/eventos`, `/catalogos` |
+| **Monitoreo** (4 indicadores SNII / proyectos / CIV) | Solo administrador | Administración → *Eje 3 · Monitoreo* | `GET /api/eje3/monitoreo`, `GET/PUT /api/eje3/docentes` |
+| **Visualizar** (producción académica) | Solo administrador | Administración → *Eje 3 · Visualizar* | `GET /api/eje3/visualizar` |
+| **Difundir** (eventos, semilleros, Congreso Internacional) | Público (lo marcado como público) y administrador (gestión de eventos) | Portal → *Eventos* · Administración → *Eje 3 · Difundir* | `GET /api/eje3/difusion`, `GET /api/eje3/difusion/eventos/:id`, `/api/eje3/eventos` |
+
+Los proyectos también los pueden capturar los docentes desde su propio espacio y pasan por revisión (ver sección 15); aquí solo cuentan los **aprobados**.
+
+Los 10 catálogos de **Registro**: proyectos de investigación, proyectos de semilleros (ambos ligados a un *evento* y con *apartados* anexos), dictaminadores, moderadores, relatores, dictaminadores revista PYAD, retribución social de estudiantes y profesores (MPYMES, MGT y MDGE) y actividades de egresados de posgrado; además, proyectos de titulación articulados al CIV, que alimentan un indicador de Monitoreo.
+
+### Base de datos simulada
+La base local es SQLite (`backend/src/Database/database.sqlite`) con datos demo del Eje 3 sembrados una sola vez. Para conectar la base real (MySQL):
+1. Instalación nueva: `schema.sql` + `seed.sql` (o `deploy_mysql.sql`), que ya incluyen las tablas del Eje 3.
+2. Base ya desplegada: aplicar **una vez** `backend/src/Database/migrations/001_eje3.sql` (idempotente, no borra datos).
+
+### Cambios de seguridad incluidos
+- Las sesiones ahora son reales: el token se guarda con hash (SHA-256), caduca a las 8 h y `logout` lo invalida. Se eliminó la contraseña de respaldo del código.
+- `POST/PUT/DELETE` de `/api/proyectos` y `/api/produccion` exigen administrador.
+- Errores internos ocultos al cliente (activar detalle solo con `APP_DEBUG=1`); CORS sin credenciales (limitar orígenes con `CORS_ALLOWED_ORIGINS`).
+- Informe completo y pendientes recomendados: `SECURITY_AUDIT_EJE3.md`.
+
+### Rendimiento del backend
+La inicialización de SQLite ya no se ejecuta en cada petición: se marca la versión del esquema (`PRAGMA user_version`) y las peticiones siguientes la omiten. La base usa modo WAL y espera máximo 5 s por un bloqueo (antes 60 s). `run.sh` arranca con `DB_DRIVER=sqlite` para no intentar MySQL en cada petición; para usar MySQL real: `DB_DRIVER=auto DB_HOST=... ./run.sh`.
+
+### Pruebas
+```bash
+./run_tests.sh            # backend + frontend + build + flujo.html
+./run_tests.sh backend    # php backend/tests/run.php (usa copias temporales de la BD)
+./run_tests.sh frontend   # Vitest + build
+```
+
+### Mapa visual del flujo
+Abre `flujo.html` (raíz del proyecto) con doble clic: recorrido paso a paso del sistema, mapa requisito → implementación del Eje 3 y árbol de archivos.
+
+---
+
+## 15. Rol Docente: los maestros registran sus proyectos
+
+Además del administrador, el sistema tiene un segundo rol: el **docente** (maestro). Entra con el mismo login y llega a su propio espacio, **Mi espacio**, donde registra sus proyectos y un administrador los revisa.
+
+### Qué puede y qué no puede hacer el docente
+| Puede | No puede |
+|---|---|
+| Registrar sus proyectos de **investigación, semilleros y titulación** (con apartados y evento) | Ver o editar proyectos de otros docentes |
+| Ligar el proyecto a un **evento público** existente | Crear o editar eventos |
+| Editar y borrar sus proyectos mientras estén en *borrador* o *devuelto* | Editar un proyecto *enviado* o *aprobado* |
+| Enviar el proyecto a revisión | Aprobar sus propios proyectos |
+| Ver su resumen de solo lectura: nivel SNII, publicaciones y producción técnica | Cambiar su SNII, subir PDF o usar cualquier pantalla de administración |
+| Cambiar su contraseña | Registrar catálogos institucionales (dictaminadores, retribución social, egresados…) |
+
+### Estados de un proyecto
+`borrador` → `enviado` → `aprobado` o `devuelto` (con comentario obligatorio; el maestro corrige y vuelve a enviar). Los proyectos capturados por el administrador nacen `aprobado`. **Monitoreo, Visualizar y Difundir cuentan y muestran solo proyectos aprobados**; los demás se ven únicamente en *Mi espacio* y en la bandeja de revisión.
+
+### Cuentas de docentes (las crea el administrador)
+En Administración → **Docentes → Usuarios docentes**: elegir al docente, crear la cuenta y copiar la **contraseña temporal** (se muestra una sola vez). El docente debe cambiarla en su primer ingreso. Si la olvida, el administrador usa *Restablecer* para generar otra; también puede desactivar la cuenta. No hay auto-registro ni recuperación por correo.
+
+### Revisión de proyectos
+En Administración → **Docentes → Revisión de proyectos** (con contador de pendientes): ver el detalle con sus apartados, **Aprobar** o **Devolver** con comentario.
+
+### Cuenta demo (solo en la base SQLite simulada)
+`investigador@buap.mx` / `lector123`, ligada al primer docente de la base demo, con un proyecto de ejemplo en cada estado. **Cambia esa contraseña (y la del administrador) antes de publicar.** En los scripts de MySQL la fila existe pero sin docente ligado, así que no puede entrar; tampoco hay proyectos demo.
+
+### Endpoints
+- Docente: `GET /api/docente/resumen`, `GET/POST /api/docente/proyectos`, `GET/PUT/DELETE /api/docente/proyectos/:id`, `POST /api/docente/proyectos/:id/enviar`.
+- Cuenta: `POST /api/auth/cambiar-password` (administrador o docente).
+- Administrador: `GET /api/eje3/revision`, `POST /api/eje3/proyectos/:id/revision`, `GET/POST /api/eje3/usuarios-docentes`, `POST /api/eje3/usuarios-docentes/:id/restablecer`, `PUT /api/eje3/usuarios-docentes/:id`.
+- Errores: 401 sin sesión o sesión expirada; 403 rol incorrecto o contraseña temporal pendiente; 404 proyecto ajeno; 409 proyecto bloqueado o transición inválida.
+
+### MySQL ya desplegado
+Aplicar **una vez**, en orden: `backend/src/Database/migrations/001_eje3.sql` y luego `002_docentes.sql` (idempotentes, no borran datos; los proyectos existentes quedan `aprobado`).
+
+---
 
 ---
 

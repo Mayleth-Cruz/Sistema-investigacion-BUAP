@@ -28,7 +28,13 @@ class ResearcherController {
      */
     public function index(Request $request): void {
         $search = $request->getQuery('search');
+        $search = is_string($search) ? $search : null;
         $researchers = $this->service->getAllResearchers($search);
+
+        // La marca de elegibilidad al SNII es de uso interno del administrador (Eje 3)
+        if (\App\Modules\Auth\AuthController::optionalAdmin($request) === null) {
+            $researchers = array_map([self::class, 'hideInternalFields'], $researchers);
+        }
 
         Response::success($researchers, 'Listado de investigadores obtenido con éxito.');
     }
@@ -45,7 +51,19 @@ class ResearcherController {
             return;
         }
 
+        if (\App\Modules\Auth\AuthController::optionalAdmin($request) === null) {
+            $researcher = self::hideInternalFields($researcher);
+        }
+
         Response::success($researcher, 'Detalles del investigador obtenidos exitosamente.');
+    }
+
+    /**
+     * Quita de la vista pública los campos de uso administrativo.
+     */
+    private static function hideInternalFields(array $researcher): array {
+        unset($researcher['snii_elegible']);
+        return $researcher;
     }
 
     /**

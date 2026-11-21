@@ -77,7 +77,11 @@ echo -e "  ${YELLOW}mysql -u root -p < backend/src/Database/seed.sql${NC}"
 echo -e "${CYAN}Nota: Si aún no configuras MySQL, el Frontend usará datos de demostración de respaldo.${NC}\n"
 
 # 5. Iniciar Servidor Backend en PHP (Puerto 8000)
-echo -e "${CYAN}Iniciando Backend en PHP (http://127.0.0.1:8000)...${NC}"
+# BD simulada local: SQLite directo, sin intentar conectar a MySQL en cada petición.
+# Para usar MySQL real ejecuta:  DB_DRIVER=auto DB_HOST=... ./run.sh
+export DB_DRIVER="${DB_DRIVER:-sqlite}"
+
+echo -e "${CYAN}Iniciando Backend en PHP (http://127.0.0.1:8000) [BD: ${DB_DRIVER}]...${NC}"
 $PHP_BIN -S 127.0.0.1:8000 -t "$BACKEND_DIR/public" "$BACKEND_DIR/public/router.php" &
 BACKEND_PID=$!
 

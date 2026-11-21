@@ -24,6 +24,16 @@ class DisseminationRepository {
     public function searchCatalog(string $query, int $limit = 20): array {
         $searchTerm = "%{$query}%";
 
+        // YEAR() solo existe en MySQL; en SQLite el año se extrae con strftime (misma salida entera)
+        $yearOf = function (string $column): string {
+            return Database::getDriver() === 'sqlite'
+                ? "CAST(strftime('%Y', {$column}) AS INTEGER)"
+                : "YEAR({$column})";
+        };
+        $yearProject = $yearOf('p.fecha_inicio');
+        $yearResearcher = $yearOf('created_at');
+
+        // Un parámetro distinto por columna (:t1..:t3): MySQL con prepares nativos no admite repetir nombres
         // 1. Buscar en Publicaciones
         $sqlPub = "SELECT 
                     'publicacion' AS entidad_tipo,
@@ -36,11 +46,11 @@ class DisseminationRepository {
                     doi,
                     url_documento
                 FROM publicaciones
-                WHERE titulo LIKE :term OR autores LIKE :term OR revista_editorial LIKE :term
+                WHERE titulo LIKE :t1 OR autores LIKE :t2 OR revista_editorial LIKE :t3
                 ORDER BY anio DESC LIMIT :limit";
 
         $stmtPub = $this->db->prepare($sqlPub);
-        $stmtPub->bindValue(':term', $searchTerm, PDO::PARAM_STR);
+        foreach ([':t1', ':t2', ':t3'] as $name) { $stmtPub->bindValue($name, $searchTerm, PDO::PARAM_STR); }
         $stmtPub->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmtPub->execute();
         $publicaciones = $stmtPub->fetchAll();
@@ -51,18 +61,19 @@ class DisseminationRepository {
                     p.id,
                     p.titulo,
                     i.nombre_completo AS autor_o_responsable,
-                    YEAR(p.fecha_inicio) AS anio,
+                    {$yearProject} AS anio,
                     p.entidad_financiadora AS medio_o_entidad,
                     p.estado AS cuartil,
                     p.codigo AS doi,
                     NULL AS url_documento
                 FROM proyectos p
                 JOIN investigadores i ON i.id = p.investigador_principal_id
-                WHERE p.titulo LIKE :term OR p.resumen LIKE :term OR p.codigo LIKE :term
+                WHERE (p.titulo LIKE :t1 OR p.resumen LIKE :t2 OR p.codigo LIKE :t3)
+                  AND " . \App\Modules\Projects\ProjectRepository::PUBLIC_FILTER . "
                 ORDER BY p.fecha_inicio DESC LIMIT :limit";
 
         $stmtProy = $this->db->prepare($sqlProy);
-        $stmtProy->bindValue(':term', $searchTerm, PDO::PARAM_STR);
+        foreach ([':t1', ':t2', ':t3'] as $name) { $stmtProy->bindValue($name, $searchTerm, PDO::PARAM_STR); }
         $stmtProy->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmtProy->execute();
         $proyectos = $stmtProy->fetchAll();
@@ -73,17 +84,17 @@ class DisseminationRepository {
                     id,
                     nombre_completo AS titulo,
                     linea_investigacion AS autor_o_responsable,
-                    YEAR(created_at) AS anio,
+                    {$yearResearcher} AS anio,
                     afiliacion AS medio_o_entidad,
                     categoria AS cuartil,
                     orcid AS doi,
                     avatar_url AS url_documento
                 FROM investigadores
-                WHERE nombre_completo LIKE :term OR linea_investigacion LIKE :term OR afiliacion LIKE :term
+                WHERE nombre_completo LIKE :t1 OR linea_investigacion LIKE :t2 OR afiliacion LIKE :t3
                 LIMIT :limit";
 
         $stmtInv = $this->db->prepare($sqlInv);
-        $stmtInv->bindValue(':term', $searchTerm, PDO::PARAM_STR);
+        foreach ([':t1', ':t2', ':t3'] as $name) { $stmtInv->bindValue($name, $searchTerm, PDO::PARAM_STR); }
         $stmtInv->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmtInv->execute();
         $investigadores = $stmtInv->fetchAll();
@@ -115,7 +126,7 @@ class DisseminationRepository {
         $publicaciones = $stmtPub->fetchAll();
 
         // Proyectos liderados
-        $stmtProy = $this->db->prepare("SELECT * FROM proyectos WHERE investigador_principal_id = :id ORDER BY fecha_inicio DESC");
+        $stmtProy = $this->db->prepare("SELECT p.* FROM proyectos p WHERE p.investigador_principal_id = :id AND " . \App\Modules\Projects\ProjectRepository::PUBLIC_FILTER . " ORDER BY p.fecha_inicio DESC");
         $stmtProy->execute([':id' => $researcherId]);
         $proyectos = $stmtProy->fetchAll();
 

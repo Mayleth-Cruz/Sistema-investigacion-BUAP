@@ -94,6 +94,57 @@ export async function checkBackendHealth() {
   return false;
 }
 
+/**
+ * Eventos de ventana que emite el cliente API para que la aplicación reaccione
+ * sin acoplar este módulo a la interfaz:
+ * - SESSION_EXPIRED_EVENT: una petición CON token recibió 401 (sesión caducada
+ *   o invalidada). Se limpian token y usuario del navegador antes de emitirlo.
+ * - PASSWORD_CHANGE_EVENT: el backend respondió 403 con el código
+ *   'cambio_password_obligatorio' (contraseña temporal de un docente).
+ */
+export const SESSION_EXPIRED_EVENT = 'buap:session-expired';
+export const PASSWORD_CHANGE_EVENT = 'buap:password-change-required';
+
+const TOKEN_KEY = 'buap_auth_token';
+const USER_KEY = 'buap_auth_user';
+
+// Endpoints donde un 401 no significa "sesión expirada"
+const NO_EXPIRY_ENDPOINTS = ['/auth/login', '/auth/logout'];
+
+function currentToken() {
+  try {
+    return typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Reacciona a respuestas 401/403 de sesión. No modifica lo que devuelven las
+ * funciones de petición: solo limpia la sesión y emite eventos.
+ */
+function handleAuthStatus(status, endpoint, sentToken, json = null) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (status === 401) {
+      if (!sentToken || NO_EXPIRY_ENDPOINTS.includes(endpoint)) return;
+      // Evita emitir varias veces cuando hay peticiones en paralelo
+      if (localStorage.getItem(TOKEN_KEY) !== sentToken) return;
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+    } else if (
+      status === 403 &&
+      json && json.errors && Array.isArray(json.errors.codigo) &&
+      json.errors.codigo[0] === 'cambio_password_obligatorio'
+    ) {
+      window.dispatchEvent(new Event(PASSWORD_CHANGE_EVENT));
+    }
+  } catch {
+    // El almacenamiento puede no estar disponible; no afecta a la petición
+  }
+}
+
 function getAuthHeaders(extraHeaders = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('buap_auth_token') : null;
   const headers = { 'Accept': 'application/json', ...extraHeaders };
@@ -108,6 +159,7 @@ function getAuthHeaders(extraHeaders = {}) {
  */
 export async function apiGet(endpoint, fallbackData = null) {
   try {
+    const sentToken = currentToken();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: getAuthHeaders()
     });
@@ -116,6 +168,17 @@ export async function apiGet(endpoint, fallbackData = null) {
       const json = await response.json();
       updateConnectionStatus(true);
       return json.data;
+    }
+
+    handleAuthStatus(response.status, endpoint, sentToken);
+    if (response.status === 403) {
+      let errJson = null;
+      try {
+        errJson = await response.json();
+      } catch {
+        errJson = null;
+      }
+      handleAuthStatus(403, endpoint, sentToken, errJson);
     }
   } catch (err) {
     updateConnectionStatus(false);
@@ -129,13 +192,16 @@ export async function apiGet(endpoint, fallbackData = null) {
  */
 export async function apiPost(endpoint, body, fallbackCreator = null) {
   try {
+    const sentToken = currentToken();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
       headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(body)
     });
+    handleAuthStatus(response.status, endpoint, sentToken);
 
     const json = await response.json();
+    handleAuthStatus(response.status, endpoint, sentToken, json);
     if (response.ok) {
       updateConnectionStatus(true);
       return { success: true, data: json.data, message: json.message };
@@ -160,13 +226,16 @@ export async function apiPost(endpoint, body, fallbackCreator = null) {
  */
 export async function apiPut(endpoint, body, fallbackUpdater = null) {
   try {
+    const sentToken = currentToken();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
       headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(body)
     });
+    handleAuthStatus(response.status, endpoint, sentToken);
 
     const json = await response.json();
+    handleAuthStatus(response.status, endpoint, sentToken, json);
     if (response.ok) {
       updateConnectionStatus(true);
       return { success: true, data: json.data, message: json.message };
@@ -191,6 +260,7 @@ export async function apiPut(endpoint, body, fallbackUpdater = null) {
  */
 export async function apiDelete(endpoint) {
   try {
+    const sentToken = currentToken();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
@@ -200,11 +270,50 @@ export async function apiDelete(endpoint) {
       updateConnectionStatus(true);
       return { success: true };
     }
+    handleAuthStatus(response.status, endpoint, sentToken);
   } catch (err) {
     updateConnectionStatus(false);
   }
 
   return { success: true, isMock: true };
+}
+
+/**
+ * Petición DELETE estricta: informa el resultado real (no simula éxito).
+ * Devuelve { success:false, message } si la respuesta no es correcta o hay
+ * un error de red; { success:true, message } si el servidor confirma.
+ */
+export async function apiDeleteStrict(endpoint) {
+  try {
+    const sentToken = currentToken();
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    handleAuthStatus(response.status, endpoint, sentToken);
+
+    let json = null;
+    try {
+      json = await response.json();
+    } catch {
+      json = null;
+    }
+    handleAuthStatus(response.status, endpoint, sentToken, json);
+
+    if (response.ok) {
+      updateConnectionStatus(true);
+      return { success: true, message: (json && json.message) || 'Registro eliminado.' };
+    }
+
+    return {
+      success: false,
+      message: (json && json.message) || 'No se pudo eliminar el registro.',
+      errors: json && json.errors ? json.errors : undefined
+    };
+  } catch {
+    updateConnectionStatus(false);
+    return { success: false, message: 'No se pudo comunicar con el servidor backend.' };
+  }
 }
 
 /**
@@ -217,11 +326,13 @@ export async function apiUpload(endpoint, formData) {
     const headers = getAuthHeaders();
     delete headers['Content-Type'];
 
+    const sentToken = currentToken();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
       headers,
       body: formData
     });
+    handleAuthStatus(response.status, endpoint, sentToken);
 
     const json = await response.json();
     if (response.ok) {

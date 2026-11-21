@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "message": "Cuenta de docente creada. Entrega la contraseña temporal: no se volverá a mostrar.",
+  "data": {
+    "id": 3,
+    "nombre": "Alejandro Morales Juárez",
+    "correo": "alejandro.morales.ju.rez.50@investigacion.buap.mx",
+    "activo": 1,
+    "investigador_id": 6,
+    "investigador_nombre": "Alejandro Morales Juárez",
+    "debe_cambiar_password": 1,
+    "ultimo_acceso": null,
+    "total_proyectos": 0,
+    "password_temporal": "••••••••••••"
+  }
+}

@@ -4,7 +4,29 @@ namespace App\Database;
 use PDO;
 
 class SqliteInitializer {
+    /**
+     * Versión del esquema SQLite (PRAGMA user_version).
+     * Súbela cuando agregues tablas/columnas/semillas nuevas a este inicializador:
+     * la BD se vuelve a migrar UNA vez y después las peticiones ya no tocan el esquema.
+     */
+    public const SCHEMA_VERSION = 3;
+
     public static function initialize(PDO $pdo): void {
+        // CAMINO RÁPIDO: si el esquema ya está al día no se ejecuta NINGÚN DDL ni escritura.
+        // Antes, cada petición lanzaba decenas de CREATE TABLE IF NOT EXISTS / ALTER / UPDATE;
+        // aunque no cambiaran nada, necesitan el bloqueo de escritura de SQLite y se quedaban
+        // esperando (hasta agotar los 30 s de PHP) si otra conexión mantenía una lectura abierta.
+        if ((int)$pdo->query("PRAGMA user_version")->fetchColumn() >= self::SCHEMA_VERSION) {
+            return;
+        }
+
+        // Modo WAL: las lecturas no bloquean a las escrituras ni al revés (se guarda en el archivo).
+        try {
+            $pdo->exec("PRAGMA journal_mode = WAL;");
+        } catch (\Throwable $e) {
+            // Algunos hostings no lo permiten; se continúa con el modo por defecto.
+        }
+
         // Desactivar temporalmente foreign keys durante la creación y carga inicial
         $pdo->exec("PRAGMA foreign_keys = OFF;");
 
@@ -269,7 +291,229 @@ class SqliteInitializer {
             $catStmt->execute(['Patente / Propiedad Industrial', 'GEN_PATENTE', 'genero_publicacion', 'Patente de invención o modelo de utilidad concedido o solicitado ante el IMPI', '#DC2626', 'lightbulb']);
         }
 
+        // 5. Eje 3 "Investigación Aplicada con Impacto Social": tablas, columnas y semilla demo
+        self::migrateEje3($pdo);
+
+        // 6. Rol DOCENTE: cuentas ligadas a un investigador, flujo de revisión de proyectos y cuenta demo
+        self::migrateDocentes($pdo);
+
         // Reactivar verificación de llaves foráneas
         $pdo->exec("PRAGMA foreign_keys = ON;");
+
+        // Esquema y semillas completos: las siguientes peticiones usarán el camino rápido.
+        $pdo->exec("PRAGMA user_version = " . self::SCHEMA_VERSION);
+    }
+
+    /**
+     * Migración idempotente del Eje 3 (se ejecuta una sola vez por BD; ver SCHEMA_VERSION).
+     * - CREATE TABLE IF NOT EXISTS para las tablas nuevas.
+     * - ALTER TABLE ADD COLUMN solo si la columna no existe (bases ya creadas).
+     * - Semilla demo una única vez, controlada con PRAGMA user_version.
+     * Debe mantenerse equivalente a schema.sql, deploy_mysql.sql y migrations/001_eje3.sql.
+     */
+    private static function migrateEje3(PDO $pdo): void {
+        // Tablas nuevas
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS eventos_investigacion (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                tipo TEXT NOT NULL,
+                edicion TEXT,
+                fecha_inicio DATE,
+                fecha_fin DATE,
+                sede TEXT,
+                descripcion TEXT,
+                estado TEXT NOT NULL DEFAULT 'programado',
+                publico INTEGER NOT NULL DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS proyecto_apartados (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                proyecto_id INTEGER NOT NULL,
+                apartado TEXT NOT NULL,
+                contenido TEXT,
+                orden INTEGER NOT NULL DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS participantes_evento (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                rol TEXT NOT NULL,
+                nombre_completo TEXT NOT NULL,
+                correo TEXT,
+                institucion TEXT,
+                especialidad TEXT,
+                evento_id INTEGER,
+                activo INTEGER NOT NULL DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (evento_id) REFERENCES eventos_investigacion(id) ON DELETE SET NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS retribucion_social (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                programa TEXT NOT NULL,
+                tipo_participante TEXT NOT NULL,
+                nombre_participante TEXT NOT NULL,
+                actividad TEXT NOT NULL,
+                institucion_beneficiada TEXT,
+                horas INTEGER DEFAULT 0,
+                fecha DATE,
+                periodo TEXT,
+                descripcion TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS actividades_egresados (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                programa TEXT,
+                nombre_egresado TEXT NOT NULL,
+                generacion TEXT,
+                actividad TEXT NOT NULL,
+                tipo TEXT NOT NULL,
+                institucion TEXT,
+                fecha DATE,
+                descripcion TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS sesiones (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                usuario_id INTEGER NOT NULL,
+                token_hash TEXT NOT NULL UNIQUE,
+                expira_en DATETIME NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+            );
+        ");
+
+        // Columnas nuevas en tablas existentes (solo si faltan)
+        $addColumns = [
+            'investigadores' => [
+                'snii_nivel'    => "ALTER TABLE investigadores ADD COLUMN snii_nivel TEXT DEFAULT NULL",
+                'snii_elegible' => "ALTER TABLE investigadores ADD COLUMN snii_elegible INTEGER NOT NULL DEFAULT 0",
+            ],
+            'proyectos' => [
+                'tipo'           => "ALTER TABLE proyectos ADD COLUMN tipo TEXT NOT NULL DEFAULT 'investigacion'",
+                'evento_id'      => "ALTER TABLE proyectos ADD COLUMN evento_id INTEGER DEFAULT NULL REFERENCES eventos_investigacion(id) ON DELETE SET NULL",
+                'articulado_civ' => "ALTER TABLE proyectos ADD COLUMN articulado_civ INTEGER NOT NULL DEFAULT 0",
+            ],
+            'publicaciones' => [
+                'origen'    => "ALTER TABLE publicaciones ADD COLUMN origen TEXT NOT NULL DEFAULT 'otra'",
+                'evento_id' => "ALTER TABLE publicaciones ADD COLUMN evento_id INTEGER DEFAULT NULL REFERENCES eventos_investigacion(id) ON DELETE SET NULL",
+            ],
+        ];
+        foreach ($addColumns as $table => $columns) {
+            $existing = $pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_COLUMN, 1);
+            foreach ($columns as $name => $ddl) {
+                if (!in_array($name, $existing, true)) {
+                    $pdo->exec($ddl);
+                }
+            }
+        }
+
+        // Índices (después de que existan las columnas)
+        $pdo->exec("
+            CREATE INDEX IF NOT EXISTS idx_proyecto_tipo ON proyectos(tipo);
+            CREATE INDEX IF NOT EXISTS idx_proyecto_evento ON proyectos(evento_id);
+            CREATE INDEX IF NOT EXISTS idx_pub_origen ON publicaciones(origen);
+            CREATE INDEX IF NOT EXISTS idx_pub_evento_id ON publicaciones(evento_id);
+            CREATE INDEX IF NOT EXISTS idx_evento_tipo ON eventos_investigacion(tipo);
+            CREATE INDEX IF NOT EXISTS idx_apartado_proyecto ON proyecto_apartados(proyecto_id);
+            CREATE INDEX IF NOT EXISTS idx_participante_rol ON participantes_evento(rol);
+            CREATE INDEX IF NOT EXISTS idx_participante_evento ON participantes_evento(evento_id);
+            CREATE INDEX IF NOT EXISTS idx_retribucion_programa ON retribucion_social(programa);
+            CREATE INDEX IF NOT EXISTS idx_egresado_tipo ON actividades_egresados(tipo);
+            CREATE INDEX IF NOT EXISTS idx_sesion_usuario ON sesiones(usuario_id);
+            CREATE INDEX IF NOT EXISTS idx_sesion_expira ON sesiones(expira_en);
+        ");
+
+        // Semilla demo del Eje 3: una sola vez (user_version = 1) y de forma atómica
+        $version = (int)$pdo->query("PRAGMA user_version")->fetchColumn();
+        if ($version < 1) {
+            require_once __DIR__ . '/Eje3Seed.php';
+            $pdo->exec("BEGIN IMMEDIATE");
+            try {
+                if ((int)$pdo->query("PRAGMA user_version")->fetchColumn() < 1) {
+                    Eje3Seed::seed($pdo);
+                    $pdo->exec("PRAGMA user_version = 1");
+                }
+                $pdo->exec("COMMIT");
+            } catch (\Throwable $e) {
+                $pdo->exec("ROLLBACK");
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Migración idempotente del rol DOCENTE (SCHEMA_VERSION 3).
+     * - usuarios: investigador_id (FK investigadores, ON DELETE SET NULL) y debe_cambiar_password.
+     * - proyectos: registro_estado (borrador|enviado|aprobado|devuelto; lo existente queda 'aprobado'),
+     *   comentario_revision, enviado_en, revisado_en, revisado_por y creado_por_usuario_id.
+     * - Índices, incluido un UNIQUE parcial: como máximo una cuenta por investigador.
+     * - Semilla demo del docente, una sola vez (ver DocenteSeed).
+     * Debe mantenerse equivalente a schema.sql, deploy_mysql.sql y migrations/002_docentes.sql.
+     */
+    private static function migrateDocentes(PDO $pdo): void {
+        $addColumns = [
+            'usuarios' => [
+                'investigador_id'       => "ALTER TABLE usuarios ADD COLUMN investigador_id INTEGER DEFAULT NULL REFERENCES investigadores(id) ON DELETE SET NULL",
+                'debe_cambiar_password' => "ALTER TABLE usuarios ADD COLUMN debe_cambiar_password INTEGER NOT NULL DEFAULT 0",
+            ],
+            'proyectos' => [
+                'registro_estado'       => "ALTER TABLE proyectos ADD COLUMN registro_estado TEXT NOT NULL DEFAULT 'aprobado'",
+                'comentario_revision'   => "ALTER TABLE proyectos ADD COLUMN comentario_revision TEXT DEFAULT NULL",
+                'enviado_en'            => "ALTER TABLE proyectos ADD COLUMN enviado_en DATETIME DEFAULT NULL",
+                'revisado_en'           => "ALTER TABLE proyectos ADD COLUMN revisado_en DATETIME DEFAULT NULL",
+                'revisado_por'          => "ALTER TABLE proyectos ADD COLUMN revisado_por INTEGER DEFAULT NULL REFERENCES usuarios(id) ON DELETE SET NULL",
+                'creado_por_usuario_id' => "ALTER TABLE proyectos ADD COLUMN creado_por_usuario_id INTEGER DEFAULT NULL REFERENCES usuarios(id) ON DELETE SET NULL",
+            ],
+        ];
+        foreach ($addColumns as $table => $columns) {
+            $existing = $pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_COLUMN, 1);
+            foreach ($columns as $name => $ddl) {
+                if (in_array($name, $existing, true)) {
+                    continue;
+                }
+                try {
+                    $pdo->exec($ddl);
+                } catch (\PDOException $e) {
+                    // Otra petición concurrente pudo agregar la columna entre la lectura y el ALTER
+                    $now = $pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_COLUMN, 1);
+                    if (!in_array($name, $now, true)) {
+                        throw $e;
+                    }
+                }
+            }
+        }
+
+        $pdo->exec("
+            CREATE INDEX IF NOT EXISTS idx_proyecto_registro ON proyectos(registro_estado);
+            CREATE INDEX IF NOT EXISTS idx_proyecto_investigador ON proyectos(investigador_principal_id);
+            CREATE INDEX IF NOT EXISTS idx_usuario_investigador ON usuarios(investigador_id);
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_usuario_investigador ON usuarios(investigador_id) WHERE investigador_id IS NOT NULL;
+        ");
+
+        // Semilla demo del docente: una sola vez (user_version < 3) y de forma atómica.
+        // Además es idempotente por sí misma (comprueba cuenta y códigos), así que reinicializar no duplica.
+        if ((int)$pdo->query("PRAGMA user_version")->fetchColumn() < 3) {
+            require_once __DIR__ . '/DocenteSeed.php';
+            $pdo->exec("BEGIN IMMEDIATE");
+            try {
+                if ((int)$pdo->query("PRAGMA user_version")->fetchColumn() < 3) {
+                    DocenteSeed::seed($pdo);
+                }
+                $pdo->exec("COMMIT");
+            } catch (\Throwable $e) {
+                $pdo->exec("ROLLBACK");
+                throw $e;
+            }
+        }
     }
 }

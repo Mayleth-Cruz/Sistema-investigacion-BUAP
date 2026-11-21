@@ -11,3 +11,8 @@ Thumbs.db
 
 # Environment variables
 .env.local
+
+# SQLite en modo WAL (archivos auxiliares temporales)
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal

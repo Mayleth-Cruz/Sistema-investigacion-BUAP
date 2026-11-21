@@ -3,6 +3,7 @@ namespace App\Modules\Projects;
 
 use App\Core\Request;
 use App\Core\Response;
+use App\Modules\Auth\AuthController;
 
 /**
  * ============================================================================
@@ -28,8 +29,15 @@ class ProjectController {
     public function index(Request $request): void {
         $estado = $request->getQuery('estado');
         $search = $request->getQuery('search');
+        $estado = is_string($estado) ? $estado : null;
+        $search = is_string($search) ? $search : null;
 
-        $projects = $this->service->getAllProjects($estado, $search);
+        // Quien no es administrador solo ve proyectos de investigación públicos (ver ProjectRepository)
+        $soloPublicos = AuthController::optionalAdmin($request) === null;
+        $projects = $this->service->getAllProjects($estado, $search, $soloPublicos);
+        if ($soloPublicos) {
+            $projects = array_map([ProjectRepository::class, 'stripInternal'], $projects);
+        }
         Response::success($projects, 'Proyectos obtenidos exitosamente.');
     }
 
@@ -38,13 +46,17 @@ class ProjectController {
      */
     public function show(Request $request, array $params): void {
         $id = (int)($params['id'] ?? 0);
-        $project = $this->service->getProjectById($id);
+        $soloPublicos = AuthController::optionalAdmin($request) === null;
+        $project = $this->service->getProjectById($id, $soloPublicos);
 
         if (!$project) {
             Response::notFound("El proyecto con ID {$id} no fue encontrado.");
             return;
         }
 
+        if ($soloPublicos) {
+            $project = ProjectRepository::stripInternal($project);
+        }
         Response::success($project, 'Proyecto cargado correctamente.');
     }
 
@@ -52,6 +64,11 @@ class ProjectController {
      * Crea un nuevo proyecto de investigación.
      */
     public function store(Request $request): void {
+        // Solo el administrador puede modificar datos (checkAdmin ya envió la respuesta 401/403 si falla)
+        if (!AuthController::checkAdmin($request)) {
+            return;
+        }
+
         $body = $request->getBody();
         $result = $this->service->createProject($body);
 
@@ -67,6 +84,11 @@ class ProjectController {
      * Actualiza un proyecto existente.
      */
     public function update(Request $request, array $params): void {
+        // Solo el administrador puede modificar datos (checkAdmin ya envió la respuesta 401/403 si falla)
+        if (!AuthController::checkAdmin($request)) {
+            return;
+        }
+
         $id = (int)($params['id'] ?? 0);
         $body = $request->getBody();
 
@@ -89,6 +111,11 @@ class ProjectController {
      * Elimina un proyecto.
      */
     public function destroy(Request $request, array $params): void {
+        // Solo el administrador puede modificar datos (checkAdmin ya envió la respuesta 401/403 si falla)
+        if (!AuthController::checkAdmin($request)) {
+            return;
+        }
+
         $id = (int)($params['id'] ?? 0);
         $deleted = $this->service->deleteProject($id);
 

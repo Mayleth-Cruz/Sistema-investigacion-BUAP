@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "message": "Contraseña restablecida. Entrega la contraseña temporal: no se volverá a mostrar.",
+  "data": {
+    "id": 3,
+    "nombre": "Alejandro Morales Juárez",
+    "correo": "alejandro.morales.ju.rez.50@investigacion.buap.mx",
+    "activo": 1,
+    "investigador_id": 6,
+    "investigador_nombre": "Alejandro Morales Juárez",
+    "debe_cambiar_password": 1,
+    "ultimo_acceso": "2026-11-16 04:44:42",
+    "total_proyectos": 2,
+    "password_temporal": "••••••••••••"
+  }
+}

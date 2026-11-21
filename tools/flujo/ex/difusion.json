@@ -1,0 +1,209 @@
+{
+  "success": true,
+  "message": "Datos de difusión obtenidos exitosamente.",
+  "data": {
+    "semilleros": [
+      {
+        "id": 1,
+        "nombre": "Encuentro de Semilleros de Investigación 2026",
+        "tipo": "semilleros",
+        "edicion": "2026",
+        "fecha_inicio": "2026-11-26",
+        "fecha_fin": "2026-11-28",
+        "sede": "Auditorio de la Facultad",
+        "descripcion": "Espacio anual para que los semilleros de investigación presenten el avance de sus proyectos ante la comunidad académica.",
+        "estado": "programado",
+        "publico": 1,
+        "created_at": "2026-11-16 02:47:49",
+        "updated_at": "2026-11-16 02:47:49",
+        "total_proyectos": 3,
+        "total_participantes": 3,
+        "total_publicaciones": 1,
+        "proyectos": [
+          {
+            "id": 6,
+            "codigo": "SEM-2026-001",
+            "titulo": "Semillero de análisis de datos para la toma de decisiones en pequeñas empresas",
+            "investigador_principal_nombre": "Dra. Sofía Valenzuela Duarte",
+            "apartados": [
+              {
+                "apartado": "Planteamiento del problema",
+                "contenido": "Las pequeñas empresas de la región toman decisiones sin información sistematizada."
+              },
+              {
+                "apartado": "Objetivos",
+                "contenido": "Construir tableros sencillos con datos abiertos y evaluar su utilidad con cinco empresas piloto."
+              },
+              {
+                "apartado": "Metodología",
+                "contenido": "Estudio de casos con entrevistas, recolección de datos abiertos y validación con los propietarios."
+              }
+            ]
+          },
+          {
+            "id": 16,
+            "codigo": "SEM-2026-004",
+            "titulo": "Semillero de finanzas personales para jóvenes universitarios",
+            "investigador_principal_nombre": "Alejandro Morales Juárez",
+            "apartados": [
+              {
+                "apartado": "Planteamiento del problema",
+                "contenido": "Pocos jóvenes llevan un presupuesto."
+              },
+              {
+                "apartado": "Metodología",
+                "contenido": "Talleres y encuestas."
+              }
+            ]
+          },
+          {
+            "id": 7,
+            "codigo": "SEM-2026-002",
+            "titulo": "Semillero de finanzas personales y educación financiera universitaria",
+            "investigador_principal_nombre": "Dr. Martín Silva Guarnizo",
+            "apartados": [
+              {
+                "apartado": "Justificación",
+                "contenido": "La educación financiera mejora la permanencia escolar y la toma de decisiones de los jóvenes."
+              },
+              {
+                "apartado": "Objetivos",
+                "contenido": "Diagnosticar hábitos de ahorro y crédito y probar un taller de cuatro sesiones."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "nombre": "Encuentro de Semilleros de Investigación 2025",
+        "tipo": "semilleros",
+        "edicion": "2025",
+        "fecha_inicio": "2025-05-14",
+        "fecha_fin": "2025-05-16",
+        "sede": "Auditorio de la Facultad",
+        "descripcion": "Edición 2025 del encuentro de semilleros, concluida con la presentación de proyectos de estudiantes y profesores.",
+        "estado": "concluido",
+        "publico": 1,
+        "created_at": "2026-11-16 02:47:49",
+        "updated_at": "2026-11-16 02:47:49",
+        "total_proyectos": 1,
+        "total_participantes": 1,
+        "total_publicaciones": 1,
+        "proyectos": [
+          {
+            "id": 8,
+            "codigo": "SEM-2025-001",
+            "titulo": "Semillero de sostenibilidad y economía circular en comercios locales",
+            "investigador_principal_nombre": "MSc. Valentina Pineda Cruz",
+            "apartados": [
+              {
+                "apartado": "Resumen",
+                "contenido": "Se documentaron doce prácticas de reutilización y reciclaje en comercios locales."
+              },
+              {
+                "apartado": "Resultados",
+                "contenido": "Se elaboró una guía de buenas prácticas presentada durante el encuentro 2025."
+              },
+              {
+                "apartado": "Conclusiones",
+                "contenido": "Existe disposición de los comercios para adoptar prácticas circulares con acompañamiento."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "congreso": [
+      {
+        "id": 2,
+        "nombre": "Congreso Internacional de Investigación en Ciencias Económico Administrativas 2026",
+        "tipo": "congreso",
+        "edicion": "2026",
+        "fecha_inicio": "2026-12-02",
+        "fecha_fin": "2026-12-04",
+        "sede": "Centro de Convenciones BUAP",
+        "descripcion": "Congreso internacional con ponencias dictaminadas, mesas moderadas y memoria arbitrada.",
+        "estado": "programado",
+        "publico": 1,
+        "created_at": "2026-11-16 02:47:49",
+        "updated_at": "2026-11-16 02:47:49",
+        "total_proyectos": 2,
+        "total_participantes": 4,
+        "total_publicaciones": 1
+      },
+      {
+        "id": 5,
+        "nombre": "Congreso Internacional de Investigación en Ciencias Económico Administrativas 2025",
+        "tipo": "congreso",
+        "edicion": "2025",
+        "fecha_inicio": "2025-10-08",
+        "fecha_fin": "2025-10-10",
+        "sede": "Centro de Convenciones BUAP",
+        "descripcion": "Edición 2025 del congreso internacional, concluida.",
+        "estado": "concluido",
+        "publico": 1,
+        "created_at": "2026-11-16 02:47:49",
+        "updated_at": "2026-11-16 02:47:49",
+        "total_proyectos": 0,
+        "total_participantes": 1,
+        "total_publicaciones": 1
+      }
+    ],
+    "otros_eventos": [
+      {
+        "id": 3,
+        "nombre": "Revista PYAD 2026",
+        "tipo": "revista_pyad",
+        "edicion": "Vol. 2026",
+        "fecha_inicio": "2026-01-15",
+        "fecha_fin": "2026-12-15",
+        "sede": "Publicación en línea",
+        "descripcion": "Convocatoria y dictaminación de artículos para el número 2026 de la revista PYAD.",
+        "estado": "en_curso",
+        "publico": 1,
+        "created_at": "2026-11-16 02:47:49",
+        "updated_at": "2026-11-16 02:47:49",
+        "total_proyectos": 0,
+        "total_participantes": 2,
+        "total_publicaciones": 2
+      }
+    ],
+    "proximos": [
+      {
+        "id": 1,
+        "nombre": "Encuentro de Semilleros de Investigación 2026",
+        "tipo": "semilleros",
+        "edicion": "2026",
+        "fecha_inicio": "2026-11-26",
+        "fecha_fin": "2026-11-28",
+        "sede": "Auditorio de la Facultad",
+        "descripcion": "Espacio anual para que los semilleros de investigación presenten el avance de sus proyectos ante la comunidad académica.",
+        "estado": "programado",
+        "publico": 1,
+        "created_at": "2026-11-16 02:47:49",
+        "updated_at": "2026-11-16 02:47:49",
+        "total_proyectos": 3,
+        "total_participantes": 3,
+        "total_publicaciones": 1
+      },
+      {
+        "id": 2,
+        "nombre": "Congreso Internacional de Investigación en Ciencias Económico Administrativas 2026",
+        "tipo": "congreso",
+        "edicion": "2026",
+        "fecha_inicio": "2026-12-02",
+        "fecha_fin": "2026-12-04",
+        "sede": "Centro de Convenciones BUAP",
+        "descripcion": "Congreso internacional con ponencias dictaminadas, mesas moderadas y memoria arbitrada.",
+        "estado": "programado",
+        "publico": 1,
+        "created_at": "2026-11-16 02:47:49",
+        "updated_at": "2026-11-16 02:47:49",
+        "total_proyectos": 2,
+        "total_participantes": 4,
+        "total_publicaciones": 1
+      }
+    ]
+  }
+}

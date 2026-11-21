@@ -1,0 +1,9 @@
+{
+  "success": false,
+  "message": "Solo se pueden revisar proyectos en estado 'enviado'.",
+  "errors": {
+    "codigo": [
+      "transicion_invalida"
+    ]
+  }
+}

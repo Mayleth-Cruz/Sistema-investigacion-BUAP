@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "message": "Cuentas de docentes obtenidas exitosamente.",
+  "data": [
+    {
+      "id": 3,
+      "nombre": "Alejandro Morales Juárez",
+      "correo": "alejandro.morales.ju.rez.50@investigacion.buap.mx",
+      "activo": 1,
+      "investigador_id": 6,
+      "investigador_nombre": "Alejandro Morales Juárez",
+      "debe_cambiar_password": 1,
+      "ultimo_acceso": null,
+      "total_proyectos": 0
+    },
+    {
+      "id": 2,
+      "nombre": "Dra. Elena Ramos Sandoval",
+      "correo": "investigador@buap.mx",
+      "activo": 1,
+      "investigador_id": 1,
+      "investigador_nombre": "Dra. Elena Ramos Sandoval",
+      "debe_cambiar_password": 0,
+      "ultimo_acceso": null,
+      "total_proyectos": 6
+    }
+  ]
+}

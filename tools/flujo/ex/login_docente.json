@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "message": "Autenticación exitosa. Bienvenido a tu espacio de docente.",
+  "data": {
+    "token": "<64 caracteres hex>",
+    "user": {
+      "id": 2,
+      "nombre": "Dra. Elena Ramos Sandoval",
+      "correo": "investigador@buap.mx",
+      "cargo": "Investigador Senior (Nivel III)",
+      "rol": "investigador",
+      "investigador_id": 1,
+      "debe_cambiar_password": 0
+    }
+  }
+}

@@ -15,6 +15,27 @@ use PDO;
 class ProjectRepository {
     private PDO $db;
 
+    /**
+     * Visibilidad para quien no es administrador: solo proyectos de investigación clásicos
+     * que no estén ligados a un evento no público. Los proyectos de semilleros y de titulación
+     * del Eje 3 se consultan únicamente por /api/eje3/proyectos [A] o, vía eventos públicos,
+     * por /api/eje3/difusion. Además solo se muestran proyectos 'aprobado' (los borradores, enviados
+     * y devueltos de docentes no son públicos).
+     */
+    public const PUBLIC_FILTER = "p.tipo = 'investigacion' AND p.registro_estado = 'aprobado'
+                AND (p.evento_id IS NULL OR p.evento_id IN (SELECT id FROM eventos_investigacion WHERE publico = 1))";
+
+    /**
+     * Columnas de uso interno del flujo de revisión de docentes: nunca se muestran a quien no es
+     * administrador (los endpoints públicos usan `p.*`; el comentario del revisor puede ser una nota interna).
+     */
+    public const INTERNAL_FIELDS = ['comentario_revision', 'revisado_por', 'revisado_en', 'enviado_en', 'creado_por_usuario_id'];
+
+    /** Quita de una fila de proyecto las columnas internas del flujo de revisión. */
+    public static function stripInternal(array $project): array {
+        return array_diff_key($project, array_flip(self::INTERNAL_FIELDS));
+    }
+
     public function __construct() {
         $this->db = Database::getConnection();
     }
@@ -26,7 +47,7 @@ class ProjectRepository {
      * @param string|null $search Filtro por texto en título, código o línea
      * @return array
      */
-    public function findAll(?string $estado = null, ?string $search = null): array {
+    public function findAll(?string $estado = null, ?string $search = null, bool $soloPublicos = false): array {
         $sql = "SELECT 
                     p.*,
                     i.nombre_completo AS investigador_principal_nombre,
@@ -40,14 +61,19 @@ class ProjectRepository {
         $conditions = [];
         $params = [];
 
+        if ($soloPublicos) {
+            $conditions[] = self::PUBLIC_FILTER;
+        }
+
         if (!empty($estado)) {
             $conditions[] = "p.estado = :estado";
             $params[':estado'] = $estado;
         }
 
         if (!empty($search)) {
-            $conditions[] = "(p.titulo LIKE :search OR p.codigo LIKE :search OR p.linea_investigacion LIKE :search)";
-            $params[':search'] = "%{$search}%";
+            $conditions[] = "(p.titulo LIKE :s1 OR p.codigo LIKE :s2 OR p.linea_investigacion LIKE :s3)";
+            // Un parámetro distinto por columna: MySQL (prepares nativos) no admite repetir nombres
+            foreach ([':s1', ':s2', ':s3'] as $name) { $params[$name] = "%{$search}%"; }
         }
 
         if (!empty($conditions)) {
@@ -64,7 +90,7 @@ class ProjectRepository {
     /**
      * Obtiene un proyecto por su ID único.
      */
-    public function findById(int $id): ?array {
+    public function findById(int $id, bool $soloPublicos = false): ?array {
         $sql = "SELECT 
                     p.*,
                     i.nombre_completo AS investigador_principal_nombre,
@@ -74,7 +100,7 @@ class ProjectRepository {
                 FROM proyectos p
                 JOIN investigadores i ON i.id = p.investigador_principal_id
                 LEFT JOIN publicaciones pub ON pub.proyecto_id = p.id
-                WHERE p.id = :id
+                WHERE p.id = :id" . ($soloPublicos ? " AND " . self::PUBLIC_FILTER : "") . "
                 GROUP BY p.id";
 
         $stmt = $this->db->prepare($sql);

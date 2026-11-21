@@ -1,0 +1,9 @@
+{
+  "success": false,
+  "message": "Debes cambiar tu contraseña temporal antes de continuar.",
+  "errors": {
+    "codigo": [
+      "cambio_password_obligatorio"
+    ]
+  }
+}
