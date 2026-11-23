@@ -1,0 +1,97 @@
+{
+  "success": true,
+  "message": "Datos de producción académica obtenidos exitosamente.",
+  "data": {
+    "publicaciones_evento_pyad": 6,
+    "por_origen": {
+      "evento": 4,
+      "revista_pyad": 2,
+      "otra": 2
+    },
+    "por_anio": [
+      {
+        "anio": 2024,
+        "evento": 1,
+        "revista_pyad": 1,
+        "otra": 0,
+        "total": 2
+      },
+      {
+        "anio": 2025,
+        "evento": 2,
+        "revista_pyad": 1,
+        "otra": 0,
+        "total": 3
+      },
+      {
+        "anio": 2026,
+        "evento": 1,
+        "revista_pyad": 0,
+        "otra": 2,
+        "total": 3
+      }
+    ],
+    "produccion_docentes": [
+      {
+        "investigador_id": 1,
+        "nombre_completo": "Dra. Elena Ramos Sandoval",
+        "afiliacion": "Facultad de Ingeniería - Depto. de Computación",
+        "publicaciones": 2,
+        "proyectos": 3,
+        "produccion_tecnica": 0,
+        "total": 5
+      },
+      {
+        "investigador_id": 3,
+        "nombre_completo": "Dra. Sofía Valenzuela Duarte",
+        "afiliacion": "Facultad de Ciencias de la Salud - Escuela de Medicina",
+        "publicaciones": 2,
+        "proyectos": 3,
+        "produccion_tecnica": 0,
+        "total": 5
+      },
+      {
+        "investigador_id": 4,
+        "nombre_completo": "Dr. Martín Silva Guarnizo",
+        "afiliacion": "Facultad de Ingeniería Mecánica y Eléctrica",
+        "publicaciones": 2,
+        "proyectos": 2,
+        "produccion_tecnica": 0,
+        "total": 4
+      },
+      {
+        "investigador_id": 2,
+        "nombre_completo": "Dr. Carlos Mendoza Villalobos",
+        "afiliacion": "Facultad de Ciencias Básicas - Instituto de Biotecnología",
+        "publicaciones": 1,
+        "proyectos": 2,
+        "produccion_tecnica": 0,
+        "total": 3
+      },
+      {
+        "investigador_id": 5,
+        "nombre_completo": "MSc. Valentina Pineda Cruz",
+        "afiliacion": "Facultad de Ciencias Sociales y Humanidades",
+        "publicaciones": 1,
+        "proyectos": 2,
+        "produccion_tecnica": 0,
+        "total": 3
+      },
+      {
+        "investigador_id": 6,
+        "nombre_completo": "Alejandro Morales Juárez",
+        "afiliacion": "Facultad de Ciencias de la Computación",
+        "publicaciones": 0,
+        "proyectos": 1,
+        "produccion_tecnica": 0,
+        "total": 1
+      }
+    ],
+    "totales": {
+      "publicaciones": 8,
+      "proyectos": 13,
+      "produccion_tecnica": 0,
+      "docentes": 8
+    }
+  }
+}

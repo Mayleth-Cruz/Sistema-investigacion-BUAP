@@ -1,0 +1,15 @@
+{
+  "success": false,
+  "message": "Error al registrar el proyecto.",
+  "errors": {
+    "titulo": [
+      "El título del proyecto es obligatorio."
+    ],
+    "investigador_principal_id": [
+      "Debes seleccionar un investigador principal."
+    ],
+    "tipo": [
+      "El tipo de proyecto es obligatorio."
+    ]
+  }
+}

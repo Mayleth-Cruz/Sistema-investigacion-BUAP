@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "message": "Sesión válida.",
+  "data": {
+    "id": 3,
+    "nombre": "Alejandro Morales Juárez",
+    "correo": "alejandro.morales.ju.rez.50@investigacion.buap.mx",
+    "cargo": "Investigador / Autor Adscrito",
+    "rol": "investigador",
+    "investigador_id": 6,
+    "debe_cambiar_password": 1
+  }
+}

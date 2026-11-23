@@ -1,0 +1,12 @@
+{
+  "success": false,
+  "message": "Completa los campos obligatorios antes de enviar el proyecto a revisión.",
+  "errors": {
+    "resumen": [
+      "Para enviar a revisión debes completar el campo 'resumen'."
+    ],
+    "linea_investigacion": [
+      "Para enviar a revisión debes completar el campo 'línea de investigación'."
+    ]
+  }
+}

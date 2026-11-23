@@ -10,9 +10,10 @@ import { IconArrowLeft, IconMenu, IconX } from './Icons';
  * - En Mobile (<= 860px): colapsa los enlaces en un Sidebar lateral deslizable
  *   con fondo difuminado y botón hamburguesa accesible.
  */
-export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, onLogout }) {
+export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, isDocente = false, onLogout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const isAdminView = currentView.startsWith('admin');
+  // Vistas de zona privada (administración o espacio docente): comparten botones
+  const isAdminView = currentView.startsWith('admin') || currentView.startsWith('docente');
   const isLoginView = currentView === 'login';
 
   const handleNavClick = (view) => {
@@ -69,7 +70,7 @@ export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, o
             }}>
               BUAP
             </span>
-            <span className="encabezado-source-black" style={{ 
+            <span className="encabezado-source-black nav-brand-sub" style={{ 
               fontSize: '13px', 
               color: 'var(--buap-cyan-306)',
               margin: 0,
@@ -93,6 +94,12 @@ export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, o
             onClick={() => handleNavClick('carpetas')}
           >
             Carpetas por Año
+          </a>
+          <a 
+            className={`nav-link ${currentView === 'eje3-difusion' ? 'active' : ''}`}
+            onClick={() => handleNavClick('eje3-difusion')}
+          >
+            Eventos
           </a>
           <a 
             className={`nav-link ${currentView === 'acerca' ? 'active' : ''}`}
@@ -132,6 +139,24 @@ export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, o
               <IconArrowLeft size={14} />
               <span>Volver al inicio</span>
             </button>
+          ) : isDocente ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '12px' }}>
+              <button 
+                type="button" 
+                className="btn btn2"
+                onClick={() => handleNavClick('docente-mi-espacio')}
+              >
+                Mi espacio
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-danger"
+                style={{ minHeight: '38px', padding: '0 12px', fontSize: '13.5px' }}
+                onClick={onLogout}
+              >
+                Cerrar sesión
+              </button>
+            </div>
           ) : (
             <button 
               type="button" 
@@ -145,7 +170,7 @@ export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, o
               }}
               style={{ marginLeft: '12px' }}
             >
-              Acceso administrador
+              {isAuthenticated ? 'Ir al panel' : 'Iniciar sesión'}
             </button>
           )}
         </nav>
@@ -210,6 +235,13 @@ export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, o
                 </button>
                 <button
                   type="button"
+                  className={`mobile-nav-item ${currentView === 'eje3-difusion' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('eje3-difusion')}
+                >
+                  <span>Eventos</span>
+                </button>
+                <button
+                  type="button"
                   className={`mobile-nav-item ${currentView === 'acerca' ? 'active' : ''}`}
                   onClick={() => handleNavClick('acerca')}
                 >
@@ -253,6 +285,28 @@ export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, o
                     <IconArrowLeft size={14} />
                     <span>Volver al inicio</span>
                   </button>
+                ) : isDocente ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <button 
+                      type="button" 
+                      className="btn"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                      onClick={() => handleNavClick('docente-mi-espacio')}
+                    >
+                      Mi espacio
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn btn-danger"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        onLogout();
+                      }}
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
                 ) : (
                   <button 
                     type="button" 
@@ -266,7 +320,7 @@ export default function BUAPHeader({ currentView, onNavigate, isAuthenticated, o
                       }
                     }}
                   >
-                    Acceso administrador
+                    {isAuthenticated ? 'Ir al panel' : 'Iniciar sesión'}
                   </button>
                 )}
               </div>

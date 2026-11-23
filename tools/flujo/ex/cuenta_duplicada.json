@@ -1,0 +1,12 @@
+{
+  "success": false,
+  "message": "Este docente ya tiene una cuenta. Usa \"Restablecer\" para generar otra contraseña temporal.",
+  "errors": {
+    "codigo": [
+      "docente_con_cuenta"
+    ],
+    "investigador_id": [
+      "Este docente ya tiene una cuenta. Usa \"Restablecer\" para generar otra contraseña temporal."
+    ]
+  }
+}

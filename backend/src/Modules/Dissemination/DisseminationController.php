@@ -47,6 +47,12 @@ class DisseminationController {
             return;
         }
 
+        // Quien no es administrador no ve los campos internos (marca SNII y datos del flujo de revisión)
+        if (\App\Modules\Auth\AuthController::optionalAdmin($request) === null) {
+            unset($profile['perfil']['snii_elegible']);
+            $profile['proyectos'] = array_map([\App\Modules\Projects\ProjectRepository::class, 'stripInternal'], $profile['proyectos'] ?? []);
+        }
+
         Response::success($profile, 'Perfil público cargado exitosamente.');
     }
 

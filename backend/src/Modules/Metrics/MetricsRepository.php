@@ -36,7 +36,8 @@ class MetricsRepository {
             SUM(CASE WHEN estado = 'en_ejecucion' THEN 1 ELSE 0 END) AS en_ejecucion,
             SUM(CASE WHEN estado = 'completado' THEN 1 ELSE 0 END) AS completados,
             SUM(CASE WHEN estado = 'propuesta' THEN 1 ELSE 0 END) AS propuestas
-        FROM proyectos");
+        FROM proyectos
+        WHERE registro_estado = 'aprobado'");
         $kpiProy = $stmtProy->fetch() ?: ['total' => 0, 'presupuesto_total' => 0];
 
         // Total de publicaciones, citas y porcentaje de Open Access
@@ -69,13 +70,20 @@ class MetricsRepository {
      * Obtiene la distribución de publicaciones científicas por cuartil (Q1, Q2, Q3, Q4, Sin cuartil).
      */
     public function getPublicationsByQuartile(): array {
+        // FIELD() solo existe en MySQL; en SQLite se obtiene el mismo orden con CASE
+        if (Database::getDriver() === 'sqlite') {
+            $order = "CASE cuartil WHEN 'Q1' THEN 1 WHEN 'Q2' THEN 2 WHEN 'Q3' THEN 3 WHEN 'Q4' THEN 4 WHEN 'Sin cuartil' THEN 5 ELSE 6 END";
+        } else {
+            $order = "FIELD(cuartil, 'Q1', 'Q2', 'Q3', 'Q4', 'Sin cuartil')";
+        }
+
         $sql = "SELECT 
                     cuartil, 
                     COUNT(*) AS cantidad,
                     ROUND((COUNT(*) * 100.0 / (SELECT COUNT(*) FROM publicaciones)), 1) AS porcentaje
                 FROM publicaciones 
                 GROUP BY cuartil 
-                ORDER BY FIELD(cuartil, 'Q1', 'Q2', 'Q3', 'Q4', 'Sin cuartil')";
+                ORDER BY {$order}";
 
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
@@ -130,6 +138,7 @@ class MetricsRepository {
                     COUNT(*) AS cantidad,
                     SUM(presupuesto) AS presupuesto_subtotal
                 FROM proyectos 
+                WHERE registro_estado = 'aprobado'
                 GROUP BY estado";
 
         $stmt = $this->db->query($sql);

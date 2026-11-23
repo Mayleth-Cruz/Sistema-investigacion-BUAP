@@ -32,12 +32,12 @@ INSERT INTO `investigadores` (`id`, `nombre_completo`, `correo`, `identificacion
 (5, 'MSc. Valentina Pineda Cruz', 'valentina.pineda@buap.mx', 'ID-442817', '0000-0002-7718-4490', 'Facultad de Filosofía y Letras - BUAP', 'Investigador Junior', 'Cienciometría, Acceso Abierto y Divulgación Científica', 'Investigadora en métricas de citación y políticas de ciencia abierta en América Latina.', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80', 1);
 
 -- 3. Insertar Proyectos de Investigación
-INSERT INTO `proyectos` (`id`, `codigo`, `titulo`, `resumen`, `investigador_principal_id`, `co_investigadores`, `estado`, `fecha_inicio`, `fecha_fin`, `presupuesto`, `entidad_financiadora`, `linea_investigacion`) VALUES
-(1, 'INV-2025-010', 'Plataforma de Diagnóstico Asistido por Visión Artificial y LLMs en Radiología Torácica', 'Pipeline clínico de aprendizaje profundo que combina modelos de visión con generadores contextuales.', 1, 'MSc. Lucas Arteaga, Dr. Andrés Correa', 'en_ejecucion', '2025-02-01', '2027-01-31', 85000.00, 'CONAHCYT', 'Inteligencia Artificial y Procesamiento de Lenguaje Natural'),
-(2, 'INV-2024-032', 'Biorremediación de Suelos Degradados Mediante Consorcios Bacterianos Nativos y Biochar', 'Aislamiento metagenómico de consorcios capaces de metabolizar metales pesados en suelos mineros.', 2, 'Dra. Sandra Lucía Gómez, Ing. Mateo Rios', 'en_ejecucion', '2024-06-15', '2026-12-15', 120000.00, 'Global Challenges', 'Biotecnología Molecular y Genómica Ambiental'),
-(3, 'INV-2024-008', 'Sistema de Alerta Temprana y Predicción de Brotes de Arbovirus con Sensores IoT', 'Integración de estaciones hiperlocales comunitarias y datos epidemiológicos para predecir dengue.', 3, 'Dr. Roberto Meza, Est. Camilo Quintero', 'completado', '2024-01-10', '2025-07-30', 48500.00, 'OPS/OMS', 'Epidemiología Espacial y Salud Pública'),
-(4, 'INV-2025-045', 'Control Predictivo y Gemelos Digitales para Baterías de Flujo en Redes Fotovoltaicas', 'Diseño de un gemelo digital para optimizar la vida útil y el despacho de microrredes.', 4, 'Ing. Felipe Restrepo, Dr. Carlos Mendoza', 'en_ejecucion', '2025-04-01', '2027-04-01', 94000.00, 'Secretaría de Energía', 'Energías Renovables y Microrredes Inteligentes'),
-(5, 'INV-2026-003', 'Mapeo del Ecosistema de Producción Científica Latinoamericana y Acceso Abierto', 'Estudio cienciométrico sobre el impacto de repositorios de acceso abierto en la visibilidad regional.', 5, 'Dra. Elena Ramos Sandoval', 'propuesta', '2026-06-01', '2027-12-31', 25000.00, 'VIEP-BUAP', 'Cienciometría, Acceso Abierto y Divulgación Científica');
+INSERT INTO `proyectos` (`id`, `codigo`, `titulo`, `resumen`, `investigador_principal_id`, `co_investigadores`, `estado`, `fecha_inicio`, `fecha_fin`, `presupuesto`, `entidad_financiadora`, `linea_investigacion`, `registro_estado`) VALUES
+(1, 'INV-2025-010', 'Plataforma de Diagnóstico Asistido por Visión Artificial y LLMs en Radiología Torácica', 'Pipeline clínico de aprendizaje profundo que combina modelos de visión con generadores contextuales.', 1, 'MSc. Lucas Arteaga, Dr. Andrés Correa', 'en_ejecucion', '2025-02-01', '2027-01-31', 85000.00, 'CONAHCYT', 'Inteligencia Artificial y Procesamiento de Lenguaje Natural', 'aprobado'),
+(2, 'INV-2024-032', 'Biorremediación de Suelos Degradados Mediante Consorcios Bacterianos Nativos y Biochar', 'Aislamiento metagenómico de consorcios capaces de metabolizar metales pesados en suelos mineros.', 2, 'Dra. Sandra Lucía Gómez, Ing. Mateo Rios', 'en_ejecucion', '2024-06-15', '2026-12-15', 120000.00, 'Global Challenges', 'Biotecnología Molecular y Genómica Ambiental', 'aprobado'),
+(3, 'INV-2024-008', 'Sistema de Alerta Temprana y Predicción de Brotes de Arbovirus con Sensores IoT', 'Integración de estaciones hiperlocales comunitarias y datos epidemiológicos para predecir dengue.', 3, 'Dr. Roberto Meza, Est. Camilo Quintero', 'completado', '2024-01-10', '2025-07-30', 48500.00, 'OPS/OMS', 'Epidemiología Espacial y Salud Pública', 'aprobado'),
+(4, 'INV-2025-045', 'Control Predictivo y Gemelos Digitales para Baterías de Flujo en Redes Fotovoltaicas', 'Diseño de un gemelo digital para optimizar la vida útil y el despacho de microrredes.', 4, 'Ing. Felipe Restrepo, Dr. Carlos Mendoza', 'en_ejecucion', '2025-04-01', '2027-04-01', 94000.00, 'Secretaría de Energía', 'Energías Renovables y Microrredes Inteligentes', 'aprobado'),
+(5, 'INV-2026-003', 'Mapeo del Ecosistema de Producción Científica Latinoamericana y Acceso Abierto', 'Estudio cienciométrico sobre el impacto de repositorios de acceso abierto en la visibilidad regional.', 5, 'Dra. Elena Ramos Sandoval', 'propuesta', '2026-06-01', '2027-12-31', 25000.00, 'VIEP-BUAP', 'Cienciometría, Acceso Abierto y Divulgación Científica', 'aprobado');
 
 -- 4. Insertar Publicaciones Científicas con Archivos Reales y Métricas
 INSERT INTO `publicaciones` (`id`, `titulo`, `tipo`, `investigador_id`, `autores`, `revista_editorial`, `anio`, `volumen`, `numero`, `paginas`, `doi`, `indexacion`, `cuartil`, `citas_estimadas`, `vistas`, `descargas`, `acceso_abierto`, `url_documento`, `resumen`, `palabras_clave`, `area_conocimiento`, `estado`, `proyecto_id`) VALUES
@@ -59,6 +59,93 @@ INSERT INTO `produccion_tecnica` (`id`, `tipo`, `titulo`, `investigador_id`, `au
 (4, 'ponencia', 'Desafíos de la soberanía científica y la infraestructura de acceso abierto en el sur global', 5, 'Valentina Pineda Cruz', 2024, 'CONGRESO-ALAS-2024', 'Congreso Latinoamericano de Sociología y Estudios de la Ciencia', 'publicada', 'Conferencia magistral presentada en el panel de políticas científicas regionales.');
 
 -- 6. Insertar Usuarios Institucionales
-INSERT INTO `usuarios` (`id`, `nombre`, `correo`, `password_hash`, `rol`, `cargo`, `activo`) VALUES
-(1, 'Dra. María Elena Ramos', 'admin@buap.mx', '$2y$12$zxOfOksTqzBfQRxowZ6GK.W8OGOrwIOgAoiJ5Q4Xd4WuJ32UZaRo2', 'administrador', 'Administradora de Investigación VIEP - BUAP', 1),
-(2, 'Dr. Carlos Mendoza Villalobos', 'investigador@buap.mx', '$2y$12$zxOfOksTqzBfQRxowZ6GK.W8OGOrwIOgAoiJ5Q4Xd4WuJ32UZaRo2', 'investigador', 'Investigador Titular ICUAP', 1);
+INSERT INTO `usuarios` (`id`, `nombre`, `correo`, `password_hash`, `rol`, `cargo`, `activo`, `investigador_id`, `debe_cambiar_password`) VALUES
+(1, 'Dra. María Elena Ramos', 'admin@buap.mx', '$2y$12$zxOfOksTqzBfQRxowZ6GK.W8OGOrwIOgAoiJ5Q4Xd4WuJ32UZaRo2', 'administrador', 'Administradora de Investigación VIEP - BUAP', 1, NULL, 0),
+(2, 'Dr. Carlos Mendoza Villalobos', 'investigador@buap.mx', '$2y$12$zxOfOksTqzBfQRxowZ6GK.W8OGOrwIOgAoiJ5Q4Xd4WuJ32UZaRo2', 'investigador', 'Investigador Titular ICUAP', 1, NULL, 0);
+
+
+-- ============================================================================
+-- DATOS SEMILLA DEL EJE 3: INVESTIGACIÓN APLICADA CON IMPACTO SOCIAL
+-- ============================================================================
+-- Datos de demostración (eventos, semilleros, titulación, participantes,
+-- retribución social, egresados, marcas SNII y origen de publicaciones).
+-- Equivalen a los que SqliteInitializer inserta automáticamente en modo SQLite.
+-- Requiere haber ejecutado antes el esquema (schema.sql / migrations/001_eje3.sql).
+
+-- Marcas SNII (investigadores 1..5)
+UPDATE `investigadores` SET `snii_nivel` = 'III', `snii_elegible` = 0 WHERE `id` = 1;
+UPDATE `investigadores` SET `snii_nivel` = 'II', `snii_elegible` = 0 WHERE `id` = 2;
+UPDATE `investigadores` SET `snii_nivel` = 'I', `snii_elegible` = 0 WHERE `id` = 3;
+UPDATE `investigadores` SET `snii_nivel` = 'Candidato', `snii_elegible` = 0 WHERE `id` = 4;
+UPDATE `investigadores` SET `snii_nivel` = NULL, `snii_elegible` = 1 WHERE `id` = 5;
+
+-- Eventos de investigación
+INSERT INTO `eventos_investigacion` (`id`, `nombre`, `tipo`, `edicion`, `fecha_inicio`, `fecha_fin`, `sede`, `descripcion`, `estado`, `publico`) VALUES
+(1, 'Encuentro de Semilleros de Investigación 2026', 'semilleros', '2026', '2026-11-26', '2026-11-28', 'Auditorio de la Facultad', 'Espacio anual para que los semilleros de investigación presenten el avance de sus proyectos ante la comunidad académica.', 'programado', 1),
+(2, 'Congreso Internacional de Investigación en Ciencias Económico Administrativas 2026', 'congreso', '2026', '2026-12-02', '2026-12-04', 'Centro de Convenciones BUAP', 'Congreso internacional con ponencias dictaminadas, mesas moderadas y memoria arbitrada.', 'programado', 1),
+(3, 'Revista PYAD 2026', 'revista_pyad', 'Vol. 2026', '2026-01-15', '2026-12-15', 'Publicación en línea', 'Convocatoria y dictaminación de artículos para el número 2026 de la revista PYAD.', 'en_curso', 1),
+(4, 'Encuentro de Semilleros de Investigación 2025', 'semilleros', '2025', '2025-05-14', '2025-05-16', 'Auditorio de la Facultad', 'Edición 2025 del encuentro de semilleros, concluida con la presentación de proyectos de estudiantes y profesores.', 'concluido', 1),
+(5, 'Congreso Internacional de Investigación en Ciencias Económico Administrativas 2025', 'congreso', '2025', '2025-10-08', '2025-10-10', 'Centro de Convenciones BUAP', 'Edición 2025 del congreso internacional, concluida.', 'concluido', 1),
+(6, 'Reunión interna del comité de posgrado e investigación', 'otro', NULL, '2026-09-10', '2026-09-10', 'Sala de juntas', 'Evento de uso interno; no se muestra en el portal público.', 'concluido', 0);
+
+-- Proyectos de semilleros y titulación (los de investigación son los ya existentes)
+INSERT INTO `proyectos` (`id`, `codigo`, `titulo`, `resumen`, `investigador_principal_id`, `co_investigadores`, `estado`, `fecha_inicio`, `fecha_fin`, `presupuesto`, `entidad_financiadora`, `linea_investigacion`, `tipo`, `evento_id`, `articulado_civ`, `registro_estado`) VALUES
+(6, 'SEM-2026-001', 'Semillero de análisis de datos para la toma de decisiones en pequeñas empresas', 'Estudiantes y profesores exploran el uso de datos abiertos para apoyar decisiones de MIPYMES de la región.', 3, 'Est. Daniela Rojas, Est. Iván Pérez', 'en_ejecucion', '2026-02-01', '2026-12-15', 0, 'Fondos Internos Institucionales', 'Gestión de la innovación', 'semillero', 1, 0, 'aprobado'),
+(7, 'SEM-2026-002', 'Semillero de finanzas personales y educación financiera universitaria', 'Diagnóstico de hábitos financieros de estudiantes y diseño de talleres de educación financiera.', 4, 'Est. Mariana Soto', 'en_ejecucion', '2026-02-15', '2026-11-30', 0, 'Fondos Internos Institucionales', 'Finanzas y desarrollo', 'semillero', 1, 0, 'aprobado'),
+(8, 'SEM-2025-001', 'Semillero de sostenibilidad y economía circular en comercios locales', 'Identificación de prácticas de economía circular en comercios del centro histórico.', 5, 'Est. Luis Barrios, Est. Ana Carmona', 'completado', '2025-01-20', '2025-05-10', 0, 'Fondos Internos Institucionales', 'Sostenibilidad y desarrollo regional', 'semillero', 4, 0, 'aprobado'),
+(9, 'TIT-2026-001', 'Proyecto de titulación articulado al CIV: modelo de vinculación con el sector productivo', 'Trabajo de titulación que se articula con las líneas del CIV para vincular a egresados con empresas.', 1, 'Est. Karen Vázquez', 'en_ejecucion', '2026-03-01', '2026-12-20', 0, 'Fondos Internos Institucionales', 'Vinculación y transferencia', 'titulacion', NULL, 1, 'aprobado'),
+(10, 'TIT-2026-002', 'Proyecto de titulación articulado al CIV: indicadores de impacto social de la investigación aplicada', 'Diseño de indicadores para medir el impacto social de proyectos de investigación aplicada.', 2, 'Est. Diego Montes', 'en_ejecucion', '2026-03-10', '2026-12-20', 0, 'Fondos Internos Institucionales', 'Impacto social de la investigación', 'titulacion', NULL, 1, 'aprobado'),
+(11, 'TIT-2026-003', 'Proyecto de titulación sin articulación al CIV: análisis de costos en servicios educativos', 'Trabajo de titulación independiente sobre estructura de costos de servicios educativos.', 3, NULL, 'propuesta', '2026-08-01', NULL, 0, 'Fondos Internos Institucionales', 'Finanzas y desarrollo', 'titulacion', NULL, 0, 'aprobado');
+
+-- Los primeros proyectos de investigación se presentan en el congreso
+UPDATE `proyectos` SET `evento_id` = 2 WHERE `id` IN (1, 2);
+
+-- Apartados anexos de los proyectos
+INSERT INTO `proyecto_apartados` (`proyecto_id`, `apartado`, `contenido`, `orden`) VALUES
+(6, 'Planteamiento del problema', 'Las pequeñas empresas de la región toman decisiones sin información sistematizada.', 0),
+(6, 'Objetivos', 'Construir tableros sencillos con datos abiertos y evaluar su utilidad con cinco empresas piloto.', 1),
+(6, 'Metodología', 'Estudio de casos con entrevistas, recolección de datos abiertos y validación con los propietarios.', 2),
+(7, 'Justificación', 'La educación financiera mejora la permanencia escolar y la toma de decisiones de los jóvenes.', 0),
+(7, 'Objetivos', 'Diagnosticar hábitos de ahorro y crédito y probar un taller de cuatro sesiones.', 1),
+(8, 'Resumen', 'Se documentaron doce prácticas de reutilización y reciclaje en comercios locales.', 0),
+(8, 'Resultados', 'Se elaboró una guía de buenas prácticas presentada durante el encuentro 2025.', 1),
+(8, 'Conclusiones', 'Existe disposición de los comercios para adoptar prácticas circulares con acompañamiento.', 2);
+
+-- Participantes de evento (dictaminadores, moderadores, relatores y dictaminadores PYAD)
+INSERT INTO `participantes_evento` (`rol`, `nombre_completo`, `correo`, `institucion`, `especialidad`, `evento_id`, `activo`) VALUES
+('dictaminador', 'Dra. Patricia Lozano Medina', 'patricia.lozano@ejemplo.mx', 'Universidad de Guadalajara', 'Administración estratégica', 2, 1),
+('dictaminador', 'Dr. Ricardo Navarro Fuentes', 'ricardo.navarro@ejemplo.mx', 'Instituto Politécnico Nacional', 'Economía aplicada', 2, 1),
+('dictaminador', 'Dra. Gabriela Ortega Salinas', 'gabriela.ortega@ejemplo.mx', 'Universidad Autónoma Metropolitana', 'Finanzas corporativas', 5, 1),
+('moderador', 'Mtro. Héctor Domínguez Vera', 'hector.dominguez@ejemplo.mx', 'BUAP', 'Mercadotecnia', 1, 1),
+('moderador', 'Dra. Alicia Fernández Rubio', 'alicia.fernandez@ejemplo.mx', 'BUAP', 'Gestión de la innovación', 1, 1),
+('moderador', 'Mtro. Jorge Castillo Reyes', 'jorge.castillo@ejemplo.mx', 'Universidad Veracruzana', 'Desarrollo regional', 2, 1),
+('relator', 'Lic. Mónica Aguilar Peña', 'monica.aguilar@ejemplo.mx', 'BUAP', 'Metodología de la investigación', 1, 1),
+('relator', 'Mtra. Sandra Quiroz Ibarra', 'sandra.quiroz@ejemplo.mx', 'BUAP', 'Contaduría pública', 4, 1),
+('relator', 'Lic. Tomás Esquivel Luna', 'tomas.esquivel@ejemplo.mx', 'BUAP', 'Administración pública', 2, 1),
+('dictaminador_pyad', 'Dr. Armando Villarreal Cano', 'armando.villarreal@ejemplo.mx', 'Universidad de Monterrey', 'Economía y desarrollo', 3, 1),
+('dictaminador_pyad', 'Dra. Teresa Maldonado Ríos', 'teresa.maldonado@ejemplo.mx', 'El Colegio de México', 'Políticas públicas', 3, 1),
+('dictaminador_pyad', 'Dr. Esteban Cordero Paz', 'esteban.cordero@ejemplo.mx', 'Universidad de Colima', 'Análisis organizacional', NULL, 1);
+
+-- Retribución social (MPYMES, MGT, MDGE)
+INSERT INTO `retribucion_social` (`programa`, `tipo_participante`, `nombre_participante`, `actividad`, `institucion_beneficiada`, `horas`, `fecha`, `periodo`, `descripcion`) VALUES
+('MPYMES', 'estudiante', 'Brenda Solís Aguirre', 'Asesoría contable a microempresas', 'Cámara de comercio local', 40, '2026-03-12', '2026-1', 'Asesoría gratuita en registros contables a 8 microempresas.'),
+('MPYMES', 'profesor', 'Dr. Raúl Mendieta Ochoa', 'Taller de planeación estratégica', 'Asociación de comerciantes', 16, '2026-04-20', '2026-1', 'Taller de dos sesiones para dueños de negocios familiares.'),
+('MGT', 'estudiante', 'Fernando Ibarra Lara', 'Diagnóstico de talento en organización civil', 'Fundación comunitaria', 30, '2026-05-05', '2026-1', 'Diagnóstico de puestos y perfiles para una organización sin fines de lucro.'),
+('MGT', 'profesor', 'Dra. Lucía Barrera Nieto', 'Capacitación en liderazgo para mandos medios', 'Municipio', 24, '2026-06-18', '2026-1', 'Curso de liderazgo para personal de un ayuntamiento.'),
+('MDGE', 'estudiante', 'Paola Jiménez Torres', 'Plan de negocios para cooperativa artesanal', 'Cooperativa de artesanas', 50, '2026-02-25', '2026-1', 'Elaboración de un plan de negocios para una cooperativa de artesanas.'),
+('MDGE', 'profesor', 'Mtro. Samuel Cárdenas Ruiz', 'Conferencia sobre gestión de empresas sociales', 'Casa de cultura', 8, '2026-07-09', '2026-2', 'Conferencia abierta al público sobre gestión de empresas sociales.');
+
+-- Actividades de egresados de posgrado
+INSERT INTO `actividades_egresados` (`programa`, `nombre_egresado`, `generacion`, `actividad`, `tipo`, `institucion`, `fecha`, `descripcion`) VALUES
+('MPYMES', 'Lic. Claudia Estrada Mora', '2022-2024', 'Dirección de empresa familiar de servicios', 'emprendimiento', 'Empresa propia', '2025-02-10', 'Fundó y dirige una empresa de servicios contables.'),
+('MGT', 'Mtro. Andrés Palacios Gil', '2021-2023', 'Gerencia de talento humano', 'empleo', 'Corporativo industrial', '2024-08-01', 'Ocupa la gerencia de talento humano de una empresa manufacturera.'),
+('MDGE', 'Mtra. Rocío Ledesma Cruz', '2020-2022', 'Artículo sobre gestión de empresas sociales', 'publicacion', 'Revista PYAD', '2025-11-03', 'Publicó un artículo derivado de su tesis de posgrado.'),
+('MGT', 'Mtro. Gustavo Reyes Lara', '2019-2021', 'Estudios de doctorado en administración', 'posgrado', 'Universidad pública nacional', '2025-09-01', 'Ingresó a un programa de doctorado en administración.');
+
+-- Origen de publicaciones existentes (evento / revista PYAD)
+UPDATE `publicaciones` SET `origen` = 'evento', `evento_id` = 2 WHERE `id` = 1;
+UPDATE `publicaciones` SET `origen` = 'evento', `evento_id` = 5 WHERE `id` = 2;
+UPDATE `publicaciones` SET `origen` = 'revista_pyad', `evento_id` = 3 WHERE `id` = 3;
+UPDATE `publicaciones` SET `origen` = 'revista_pyad', `evento_id` = 3 WHERE `id` = 4;
+UPDATE `publicaciones` SET `origen` = 'evento', `evento_id` = 4 WHERE `id` = 5;
+UPDATE `publicaciones` SET `origen` = 'evento', `evento_id` = 1 WHERE `id` = 6;

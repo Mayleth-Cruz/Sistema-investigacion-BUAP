@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SI3 · flujo del sistema</title>
+<script>
+  /* Aplica el tema antes de pintar para evitar el parpadeo. */
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("si3-theme"); } catch (e) {}
+    if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<style>
+/*@CSS@*/
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="row1">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">S3</div>
+      <div><h1 id="title">SI3 · flujo del sistema</h1><p class="tag" id="tagline">Del portal al maestro que registra su proyecto, la revisión y los indicadores del Eje 3, paso a paso</p></div>
+    </div>
+    <div class="ctrl" role="group" aria-label="Controles">
+      <div class="seg views" role="group" aria-label="Vista">
+        <button id="vFlujo" aria-pressed="true">Flujo</button>
+        <button id="vEje" aria-pressed="false">Eje 3</button>
+        <button id="vArch" aria-pressed="false">Archivos</button>
+      </div>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="seg flowonly">
+        <button id="prev" aria-label="Paso anterior"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button id="play" class="play" aria-label="Reproducir"></button>
+        <button id="next" aria-label="Paso siguiente"><svg class="i" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <span class="counter flowonly" id="counter" aria-live="polite">1 / 1</span>
+      <span class="counter entonly" id="eCounter" aria-live="polite">1 / 1</span>
+      <select id="speed" class="flowonly" aria-label="Velocidad"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+      <span class="sep" aria-hidden="true"></span>
+      <button class="ib" id="btnNotes" aria-label="Cosas a saber" title="Cosas a saber"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span class="dot" id="notesN"></span></button>
+      <button class="ib" id="btnTheme" aria-label="Cambiar tema" title="Cambiar tema claro / oscuro"></button>
+    </div>
+  </div>
+  <div class="track flowonly" id="track" role="tablist" aria-label="Pasos"></div>
+  <div class="track entonly" id="eTrack" role="tablist" aria-label="Temas"></div>
+</header>
+
+<main class="arch archonly">
+  <section class="card arbol" aria-label="Archivos del proyecto">
+    <div class="lhead">
+      <h3>Archivos del proyecto</h3>
+      <p id="aCount">Cargando…</p>
+      <input type="text" id="aFilter" placeholder="Filtrar por nombre, carpeta o descripción" spellcheck="false" autocomplete="off" aria-label="Filtrar archivos">
+    </div>
+    <div class="lbody" id="aTree"></div>
+  </section>
+  <aside class="card panel archdet" id="aDet" aria-live="polite"></aside>
+</main>
+
+<main class="ent entonly">
+  <section class="card lista" aria-label="Temas de la tabla del Eje 3">
+    <div class="lhead">
+      <h3>Eje 3 · Requisito → implementación</h3>
+      <p id="eEstrategia"></p>
+      <details>
+        <summary>Objetivo y cómo leer esto</summary>
+        <ul class="tips">
+          <li id="eObjetivo"></li>
+          <li>Elige un tema: <b>Qué piden</b> es el texto de la tabla, <b>Cómo está hecho</b> da endpoints, tablas, regla y archivos, y <b>Cómo probarlo</b> trae un <code>curl</code> y los casos de prueba.</li>
+          <li>Las siglas MPYMES, MGT, MDGE, PYAD, CIV y SNII se usan tal cual aparecen en la tabla.</li>
+        </ul>
+      </details>
+    </div>
+    <div class="lbody" id="eList" role="tablist" aria-label="Temas"></div>
+    <div class="foot"><span class="hide-s"><kbd>↑</kbd> <kbd>↓</kbd> temas · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> pestañas</span></div>
+  </section>
+
+  <aside class="card panel" aria-live="polite">
+    <div class="head" id="eHead"></div>
+    <div class="tabs" id="eTabs" role="tablist" aria-label="Secciones del tema"></div>
+    <div class="body" id="eBody"></div>
+  </aside>
+</main>
+
+<main class="flowonly">
+  <section class="card diagram" aria-label="Diagrama del flujo">
+    <div class="stage"><svg id="svg" role="img" aria-label="Diagrama de pasos del flujo"></svg></div>
+    <div class="foot">
+      <div class="legend">
+        <span><i style="background:var(--http)"></i>HTTP</span>
+        <span><i style="background:var(--db)"></i>Datos (R lee · W escribe)</span>
+        <span><i style="background:var(--err)"></i>Error</span>
+      </div>
+      <span class="hide-s"><kbd>←</kbd> <kbd>→</kbd> pasos · <kbd>espacio</kbd> reproducir · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> pestañas</span>
+    </div>
+  </section>
+
+  <aside class="card panel" aria-live="polite">
+    <div class="head" id="head"></div>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Secciones del paso"></div>
+    <div class="body" id="body"></div>
+  </aside>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="dlgNotes" aria-labelledby="dnT">
+  <div class="dh"><h2 id="dnT">Cosas a saber de este sistema</h2><button class="ib" data-close aria-label="Cerrar"><svg class="i" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="db"><p class="hint" style="margin-top:12px">Lo que el código hace hoy y conviene tener presente. Cada punto trae el botón para copiar su ruta y línea.</p><div id="notes"></div></div>
+</dialog>
+
+<script>
+/* ==================== DATOS (generados desde el código real; los valida tests/validar_flujo.mjs) ==================== */
+/*@DATA@*/
+/* ==================== FIN DE DATOS ==================== */
+</script>
+<script>
+/*@APP@*/
+</script>
+</body>
+</html>

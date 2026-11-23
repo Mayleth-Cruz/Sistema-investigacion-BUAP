@@ -3,6 +3,7 @@ namespace App\Modules\Production;
 
 use App\Core\Request;
 use App\Core\Response;
+use App\Modules\Auth\AuthController;
 
 /**
  * ============================================================================
@@ -43,6 +44,11 @@ class ProductionController {
     }
 
     public function store(Request $request): void {
+        // Solo el administrador puede modificar datos (checkAdmin ya envió la respuesta 401/403 si falla)
+        if (!AuthController::checkAdmin($request)) {
+            return;
+        }
+
         $body = $request->getBody();
         $result = $this->service->createProduction($body);
 
@@ -55,6 +61,11 @@ class ProductionController {
     }
 
     public function update(Request $request, array $params): void {
+        // Solo el administrador puede modificar datos (checkAdmin ya envió la respuesta 401/403 si falla)
+        if (!AuthController::checkAdmin($request)) {
+            return;
+        }
+
         $id = (int)($params['id'] ?? 0);
         $body = $request->getBody();
 
@@ -74,6 +85,11 @@ class ProductionController {
     }
 
     public function destroy(Request $request, array $params): void {
+        // Solo el administrador puede modificar datos (checkAdmin ya envió la respuesta 401/403 si falla)
+        if (!AuthController::checkAdmin($request)) {
+            return;
+        }
+
         $id = (int)($params['id'] ?? 0);
         $deleted = $this->service->deleteProduction($id);
 

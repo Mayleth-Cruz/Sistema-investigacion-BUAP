@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "message": "Autenticación exitosa. Bienvenido al panel de administración.",
+  "data": {
+    "token": "<64 caracteres hex>",
+    "user": {
+      "id": 1,
+      "nombre": "Dra. María Elena Ramos",
+      "correo": "admin@buap.mx",
+      "cargo": "Administradora de Investigación VIEP",
+      "rol": "administrador",
+      "investigador_id": null,
+      "debe_cambiar_password": 0
+    }
+  }
+}

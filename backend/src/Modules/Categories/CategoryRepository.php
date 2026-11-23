@@ -43,8 +43,8 @@ class CategoryRepository {
         }
 
         if (!empty($filters['search'])) {
-            $conditions[] = "(c.nombre LIKE :search OR c.descripcion LIKE :search OR c.codigo LIKE :search)";
-            $params[':search'] = "%{$filters['search']}%";
+            $conditions[] = "(c.nombre LIKE :s1 OR c.descripcion LIKE :s2 OR c.codigo LIKE :s3)";
+            foreach ([':s1', ':s2', ':s3'] as $name) { $params[$name] = "%{$filters['search']}%"; }
         }
 
         if (!empty($conditions)) {

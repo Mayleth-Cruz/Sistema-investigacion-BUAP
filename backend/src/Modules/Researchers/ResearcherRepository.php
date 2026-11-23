@@ -35,17 +35,17 @@ class ResearcherRepository {
                     COALESCE(SUM(pub.citas_estimadas), 0) AS total_citas
                 FROM investigadores i
                 LEFT JOIN publicaciones pub ON pub.investigador_id = i.id
-                LEFT JOIN proyectos pro ON pro.investigador_principal_id = i.id";
+                LEFT JOIN proyectos pro ON pro.investigador_principal_id = i.id AND pro.registro_estado = 'aprobado'";
 
         $params = [];
 
         // Si el usuario especificó un término de búsqueda, agregamos la cláusula WHERE
         if (!empty($search)) {
-            $sql .= " WHERE (i.nombre_completo LIKE :search 
-                         OR i.correo LIKE :search 
-                         OR i.linea_investigacion LIKE :search 
-                         OR i.afiliacion LIKE :search)";
-            $params[':search'] = "%{$search}%";
+            $sql .= " WHERE (i.nombre_completo LIKE :s1 
+                         OR i.correo LIKE :s2 
+                         OR i.linea_investigacion LIKE :s3 
+                         OR i.afiliacion LIKE :s4)";
+            foreach ([':s1', ':s2', ':s3', ':s4'] as $name) { $params[$name] = "%{$search}%"; }
         }
 
         $sql .= " GROUP BY i.id ORDER BY i.nombre_completo ASC";
@@ -69,7 +69,7 @@ class ResearcherRepository {
                     COALESCE(SUM(pub.citas_estimadas), 0) AS total_citas
                 FROM investigadores i
                 LEFT JOIN publicaciones pub ON pub.investigador_id = i.id
-                LEFT JOIN proyectos pro ON pro.investigador_principal_id = i.id
+                LEFT JOIN proyectos pro ON pro.investigador_principal_id = i.id AND pro.registro_estado = 'aprobado'
                 WHERE i.id = :id
                 GROUP BY i.id";
 

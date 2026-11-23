@@ -1,0 +1,87 @@
+{
+  "success": true,
+  "message": "Indicadores de monitoreo calculados exitosamente.",
+  "data": {
+    "docentes_con_proyectos": 5,
+    "docentes_titulacion_civ": 2,
+    "profesores_snii": 4,
+    "profesores_elegibles_snii": 1,
+    "total_docentes": 8,
+    "docentes_con_semilleros": 3,
+    "snii_por_nivel": {
+      "Candidato": 1,
+      "I": 1,
+      "II": 1,
+      "III": 1
+    },
+    "detalle": {
+      "con_proyectos": [
+        {
+          "id": 1,
+          "nombre_completo": "Dra. Elena Ramos Sandoval",
+          "total": 2
+        },
+        {
+          "id": 2,
+          "nombre_completo": "Dr. Carlos Mendoza Villalobos",
+          "total": 1
+        },
+        {
+          "id": 4,
+          "nombre_completo": "Dr. Martín Silva Guarnizo",
+          "total": 1
+        },
+        {
+          "id": 3,
+          "nombre_completo": "Dra. Sofía Valenzuela Duarte",
+          "total": 1
+        },
+        {
+          "id": 5,
+          "nombre_completo": "MSc. Valentina Pineda Cruz",
+          "total": 1
+        }
+      ],
+      "titulacion_civ": [
+        {
+          "id": 2,
+          "nombre_completo": "Dr. Carlos Mendoza Villalobos",
+          "total": 1
+        },
+        {
+          "id": 1,
+          "nombre_completo": "Dra. Elena Ramos Sandoval",
+          "total": 1
+        }
+      ],
+      "en_snii": [
+        {
+          "id": 1,
+          "nombre_completo": "Dra. Elena Ramos Sandoval",
+          "snii_nivel": "III"
+        },
+        {
+          "id": 2,
+          "nombre_completo": "Dr. Carlos Mendoza Villalobos",
+          "snii_nivel": "II"
+        },
+        {
+          "id": 3,
+          "nombre_completo": "Dra. Sofía Valenzuela Duarte",
+          "snii_nivel": "I"
+        },
+        {
+          "id": 4,
+          "nombre_completo": "Dr. Martín Silva Guarnizo",
+          "snii_nivel": "Candidato"
+        }
+      ],
+      "elegibles": [
+        {
+          "id": 5,
+          "nombre_completo": "MSc. Valentina Pineda Cruz"
+        }
+      ]
+    }
+  }
+}

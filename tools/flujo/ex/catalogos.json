@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "message": "Resumen de catálogos obtenido exitosamente.",
+  "data": {
+    "proyectos_investigacion": 7,
+    "proyectos_semilleros": 4,
+    "proyectos_titulacion": 4,
+    "dictaminadores": 3,
+    "moderadores": 3,
+    "relatores": 3,
+    "dictaminadores_pyad": 3,
+    "retribucion_mpymes": 2,
+    "retribucion_mgt": 2,
+    "retribucion_mdge": 2,
+    "egresados": 4,
+    "eventos": 6,
+    "docentes": 8,
+    "proyectos_pendientes": 1
+  }
+}

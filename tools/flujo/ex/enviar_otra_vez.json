@@ -1,0 +1,9 @@
+{
+  "success": false,
+  "message": "Solo se pueden enviar proyectos en borrador o devueltos.",
+  "errors": {
+    "codigo": [
+      "transicion_invalida"
+    ]
+  }
+}

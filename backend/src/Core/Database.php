@@ -46,8 +46,15 @@ class Database {
             $pass = $config['password'] ?? '';
             $charset = $config['charset'] ?? 'utf8mb4';
 
+            // DB_DRIVER=sqlite fuerza la BD local simulada y evita intentar MySQL en cada petición
+            // (por defecto 'auto': MySQL primero y, si no responde, SQLite).
+            $forceSqlite = strtolower(trim((string)getenv('DB_DRIVER'))) === 'sqlite';
+
             // 1. Intentar conectar con MySQL primero (con timeout de 1s para desarrollo rápido)
             try {
+                if ($forceSqlite) {
+                    throw new \RuntimeException('DB_DRIVER=sqlite: se omite MySQL.');
+                }
                 $dsn = "mysql:host={$host};port={$port};dbname={$dbName};charset={$charset}";
                 $options = ($config['options'] ?? []) + [
                     PDO::ATTR_TIMEOUT => 1,
@@ -60,18 +67,30 @@ class Database {
                 return self::$connection;
             } catch (\Throwable $e) {
                 // 2. Si MySQL no está disponible, activar SQLite local de alta resiliencia
-                $sqliteDir = dirname(__DIR__) . '/Database';
+                // La ruta puede sobrescribirse con SI3_SQLITE_PATH (útil para pruebas con copias de la BD)
+                $customPath = getenv('SI3_SQLITE_PATH');
+                if ($customPath !== false && trim($customPath) !== '') {
+                    $sqlitePath = $customPath;
+                    $sqliteDir = dirname($sqlitePath);
+                } else {
+                    $sqliteDir = dirname(__DIR__) . '/Database';
+                    $sqlitePath = $sqliteDir . '/database.sqlite';
+                }
                 if (!is_dir($sqliteDir)) {
                     @mkdir($sqliteDir, 0777, true);
                 }
-                $sqlitePath = $sqliteDir . '/database.sqlite';
 
+                // ATTR_TIMEOUT = segundos que SQLite espera un bloqueo ocupado (por defecto 60 s,
+                // más que el límite de 30 s de PHP): 5 s basta y falla rápido en vez de colgarse.
                 self::$connection = new PDO("sqlite:{$sqlitePath}", null, null, [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_TIMEOUT            => 5
                 ]);
 
                 self::$connection->exec('PRAGMA foreign_keys = ON;');
+                // Con WAL, NORMAL es seguro y evita un fsync por cada escritura.
+                self::$connection->exec('PRAGMA synchronous = NORMAL;');
                 self::$driver = 'sqlite';
 
                 // Inicializar tablas y datos semilla de forma automática

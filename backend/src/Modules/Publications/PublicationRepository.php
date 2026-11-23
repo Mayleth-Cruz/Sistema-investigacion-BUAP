@@ -20,6 +20,14 @@ class PublicationRepository {
     }
 
     /**
+     * Normaliza el origen de la publicación (Eje 3): 'evento', 'revista_pyad' u 'otra'.
+     * Devuelve null si no viene o no es válido (en la actualización conserva el valor actual).
+     */
+    private static function normalizeOrigen($value): ?string {
+        return in_array($value, ['evento', 'revista_pyad', 'otra'], true) ? $value : null;
+    }
+
+    /**
      * Lista publicaciones con filtros opcionales de cuartil, año, tipo, indexación o investigador.
      */
     public function findAll(array $filters = []): array {
@@ -32,7 +40,7 @@ class PublicationRepository {
                     pro.titulo AS proyecto_titulo
                 FROM publicaciones pub
                 JOIN investigadores i ON i.id = pub.investigador_id
-                LEFT JOIN proyectos pro ON pro.id = pub.proyecto_id";
+                LEFT JOIN proyectos pro ON pro.id = pub.proyecto_id AND pro.registro_estado = 'aprobado'";
 
         $conditions = [];
         $params = [];
@@ -87,8 +95,8 @@ class PublicationRepository {
         }
 
         if (!empty($filters['search'])) {
-            $conditions[] = "(pub.titulo LIKE :search OR pub.autores LIKE :search OR pub.resumen LIKE :search OR pub.palabras_clave LIKE :search OR pub.revista_editorial LIKE :search OR pub.doi LIKE :search OR pub.area_conocimiento LIKE :search OR pub.evento LIKE :search)";
-            $params[':search'] = "%{$filters['search']}%";
+            $conditions[] = "(pub.titulo LIKE :s1 OR pub.autores LIKE :s2 OR pub.resumen LIKE :s3 OR pub.palabras_clave LIKE :s4 OR pub.revista_editorial LIKE :s5 OR pub.doi LIKE :s6 OR pub.area_conocimiento LIKE :s7 OR pub.evento LIKE :s8)";
+            foreach ([':s1', ':s2', ':s3', ':s4', ':s5', ':s6', ':s7', ':s8'] as $name) { $params[$name] = "%{$filters['search']}%"; }
         }
 
         if (!empty($conditions)) {
@@ -115,7 +123,7 @@ class PublicationRepository {
                     pro.titulo AS proyecto_titulo
                 FROM publicaciones pub
                 JOIN investigadores i ON i.id = pub.investigador_id
-                LEFT JOIN proyectos pro ON pro.id = pub.proyecto_id
+                LEFT JOIN proyectos pro ON pro.id = pub.proyecto_id AND pro.registro_estado = 'aprobado'
                 WHERE pub.id = :id";
 
         $stmt = $this->db->prepare($sql);
@@ -199,12 +207,14 @@ class PublicationRepository {
                     titulo, tipo, investigador_id, autores, revista_editorial, 
                     anio, volumen, numero, paginas, doi, indexacion, 
                     cuartil, citas_estimadas, acceso_abierto, url_documento,
-                    resumen, palabras_clave, area_conocimiento, evento, estado, proyecto_id
+                    resumen, palabras_clave, area_conocimiento, evento, estado, proyecto_id,
+                    origen, evento_id
                 ) VALUES (
                     :titulo, :tipo, :investigador_id, :autores, :revista_editorial, 
                     :anio, :volumen, :numero, :paginas, :doi, :indexacion, 
                     :cuartil, :citas_estimadas, :acceso_abierto, :url_documento,
-                    :resumen, :palabras_clave, :area_conocimiento, :evento, :estado, :proyecto_id
+                    :resumen, :palabras_clave, :area_conocimiento, :evento, :estado, :proyecto_id,
+                    :origen, :evento_id
                 )";
 
         $stmt = $this->db->prepare($sql);
@@ -229,7 +239,9 @@ class PublicationRepository {
             ':area_conocimiento' => $data['area_conocimiento'] ?? ($data['categoria'] ?? null),
             ':evento'            => !empty($data['evento']) ? trim($data['evento']) : null,
             ':estado'            => $data['estado'] ?? 'publicado',
-            ':proyecto_id'       => !empty($data['proyecto_id']) ? (int)$data['proyecto_id'] : null
+            ':proyecto_id'       => !empty($data['proyecto_id']) ? (int)$data['proyecto_id'] : null,
+            ':origen'            => self::normalizeOrigen($data['origen'] ?? null) ?? 'otra',
+            ':evento_id'         => !empty($data['evento_id']) ? (int)$data['evento_id'] : null
         ]);
 
         return (int)$this->db->lastInsertId();
@@ -239,6 +251,10 @@ class PublicationRepository {
      * Actualiza los datos de una publicación científica.
      */
     public function update(int $id, array $data): bool {
+        // evento_id solo se modifica si viene en la petición (si no, se conserva el valor actual)
+        $setEvent = array_key_exists('evento_id', $data);
+        $eventSql = $setEvent ? 'evento_id         = :evento_id' : 'evento_id         = evento_id';
+
         $sql = "UPDATE publicaciones SET 
                     titulo            = :titulo,
                     tipo              = :tipo,
@@ -260,7 +276,9 @@ class PublicationRepository {
                     area_conocimiento = :area_conocimiento,
                     evento            = :evento,
                     estado            = :estado,
-                    proyecto_id       = :proyecto_id
+                    proyecto_id       = :proyecto_id,
+                    origen            = COALESCE(:origen, origen),
+                    {$eventSql}
                 WHERE id = :id";
 
         $stmt = $this->db->prepare($sql);
@@ -286,8 +304,9 @@ class PublicationRepository {
             ':area_conocimiento' => $data['area_conocimiento'] ?? ($data['categoria'] ?? null),
             ':evento'            => !empty($data['evento']) ? trim($data['evento']) : null,
             ':estado'            => $data['estado'] ?? 'publicado',
-            ':proyecto_id'       => !empty($data['proyecto_id']) ? (int)$data['proyecto_id'] : null
-        ]);
+            ':proyecto_id'       => !empty($data['proyecto_id']) ? (int)$data['proyecto_id'] : null,
+            ':origen'            => self::normalizeOrigen($data['origen'] ?? null)
+        ] + ($setEvent ? [':evento_id' => !empty($data['evento_id']) ? (int)$data['evento_id'] : null] : []));
     }
 
     /**

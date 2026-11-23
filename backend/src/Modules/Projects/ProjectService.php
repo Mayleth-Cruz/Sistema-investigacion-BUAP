@@ -22,15 +22,15 @@ class ProjectService {
     /**
      * Obtiene el listado de proyectos con filtros de monitoreo.
      */
-    public function getAllProjects(?string $estado = null, ?string $search = null): array {
-        return $this->repository->findAll($estado, $search);
+    public function getAllProjects(?string $estado = null, ?string $search = null, bool $soloPublicos = false): array {
+        return $this->repository->findAll($estado, $search, $soloPublicos);
     }
 
     /**
      * Obtiene el detalle de un proyecto por su ID.
      */
-    public function getProjectById(int $id): ?array {
-        return $this->repository->findById($id);
+    public function getProjectById(int $id, bool $soloPublicos = false): ?array {
+        return $this->repository->findById($id, $soloPublicos);
     }
 
     /**

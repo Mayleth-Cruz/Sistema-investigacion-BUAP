@@ -12,9 +12,11 @@
  * ============================================================================
  */
 
-// 1. Manejo de Errores en tiempo de desarrollo
+// 1. Manejo de Errores: los detalles solo se muestran con APP_DEBUG=1 (nunca en producción)
+$appDebug = in_array(strtolower(trim((string)getenv('APP_DEBUG'))), ['1', 'true', 'on', 'yes'], true);
 error_reporting(E_ALL);
-ini_set('display_errors', '1');
+ini_set('display_errors', $appDebug ? '1' : '0');
+ini_set('log_errors', '1');
 
 // 2. Autoloader PSR-4 Nativo
 // Carga automáticamente las clases bajo el namespace App\... desde la carpeta src/
@@ -66,7 +68,9 @@ $router->get('/api', function(Request $req) {
             'publicaciones'  => '/api/publicaciones',
             'produccion'     => '/api/produccion',
             'metricas'       => '/api/metricas/dashboard',
-            'difusion'       => '/api/difusion/buscar?q={termino}'
+            'difusion'       => '/api/difusion/buscar?q={termino}',
+            'eje3'           => '/api/eje3/catalogos',
+            'docente'        => '/api/docente/resumen'
         ]
     ], 'Bienvenido a la API del Sistema de Investigación');
 });
@@ -123,6 +127,7 @@ use App\Modules\Auth\AuthController;
 $router->post('/api/auth/login',          [AuthController::class, 'login']);
 $router->get('/api/auth/me',              [AuthController::class, 'me']);
 $router->post('/api/auth/logout',         [AuthController::class, 'logout']);
+$router->post('/api/auth/cambiar-password', [AuthController::class, 'changePassword']);  // admin o docente
 
 // --- MÓDULO 8: SUBIDA SEGURA DE ARCHIVOS PDF ---
 use App\Modules\Upload\UploadController;
@@ -135,6 +140,86 @@ $router->get('/api/categorias/:id',       [CategoryController::class, 'show']);
 $router->post('/api/categorias',          [CategoryController::class, 'store']);
 $router->put('/api/categorias/:id',       [CategoryController::class, 'update']);
 $router->delete('/api/categorias/:id',    [CategoryController::class, 'destroy']);
+
+// --- MÓDULO 10: EJE 3 · INVESTIGACIÓN APLICADA CON IMPACTO SOCIAL ---
+// Leyenda: [A] requiere administrador · [P] público · [P*] público (un admin ve además lo no público)
+// Las rutas estáticas se declaran antes que las dinámicas (:id) para evitar choques.
+use App\Modules\Eje3\EventController;
+use App\Modules\Eje3\Eje3ProjectController;
+use App\Modules\Eje3\ParticipantController;
+use App\Modules\Eje3\SocialReturnController;
+use App\Modules\Eje3\GraduateController;
+use App\Modules\Eje3\FacultyController;
+use App\Modules\Eje3\CatalogController;
+use App\Modules\Eje3\MonitoringController;
+use App\Modules\Eje3\VisualizationController;
+use App\Modules\Eje3\PublicDisseminationController;
+use App\Modules\Eje3\TeacherAccountController;
+
+// Eventos
+$router->get('/api/eje3/eventos',                  [EventController::class, 'index']);        // [P*]
+$router->get('/api/eje3/eventos/:id',              [EventController::class, 'show']);         // [P*]
+$router->post('/api/eje3/eventos',                 [EventController::class, 'store']);        // [A]
+$router->put('/api/eje3/eventos/:id',              [EventController::class, 'update']);       // [A]
+$router->delete('/api/eje3/eventos/:id',           [EventController::class, 'destroy']);      // [A]
+
+// Proyectos (investigación, semilleros y titulación) con apartados
+$router->get('/api/eje3/proyectos',                [Eje3ProjectController::class, 'index']);  // [A]
+$router->get('/api/eje3/proyectos/:id',            [Eje3ProjectController::class, 'show']);   // [A]
+$router->post('/api/eje3/proyectos',               [Eje3ProjectController::class, 'store']);  // [A]
+$router->put('/api/eje3/proyectos/:id',            [Eje3ProjectController::class, 'update']); // [A]
+$router->delete('/api/eje3/proyectos/:id',         [Eje3ProjectController::class, 'destroy']);// [A]
+$router->post('/api/eje3/proyectos/:id/revision',  [Eje3ProjectController::class, 'review']); // [A] aprobar | devolver
+$router->get('/api/eje3/revision',                 [Eje3ProjectController::class, 'pending']);// [A] bandeja de enviados
+
+// Cuentas de docentes (las crea el administrador; contraseña temporal)
+$router->get('/api/eje3/usuarios-docentes',                  [TeacherAccountController::class, 'index']);  // [A]
+$router->post('/api/eje3/usuarios-docentes',                 [TeacherAccountController::class, 'store']);  // [A]
+$router->post('/api/eje3/usuarios-docentes/:id/restablecer', [TeacherAccountController::class, 'reset']);  // [A]
+$router->put('/api/eje3/usuarios-docentes/:id',              [TeacherAccountController::class, 'update']); // [A]
+
+// Participantes de evento (dictaminadores, moderadores, relatores, dictaminadores PYAD)
+$router->get('/api/eje3/participantes',            [ParticipantController::class, 'index']);  // [A]
+$router->get('/api/eje3/participantes/:id',        [ParticipantController::class, 'show']);   // [A]
+$router->post('/api/eje3/participantes',           [ParticipantController::class, 'store']);  // [A]
+$router->put('/api/eje3/participantes/:id',        [ParticipantController::class, 'update']); // [A]
+$router->delete('/api/eje3/participantes/:id',     [ParticipantController::class, 'destroy']);// [A]
+
+// Retribución social (MPYMES, MGT, MDGE)
+$router->get('/api/eje3/retribucion-social',       [SocialReturnController::class, 'index']);   // [A]
+$router->get('/api/eje3/retribucion-social/:id',   [SocialReturnController::class, 'show']);    // [A]
+$router->post('/api/eje3/retribucion-social',      [SocialReturnController::class, 'store']);   // [A]
+$router->put('/api/eje3/retribucion-social/:id',   [SocialReturnController::class, 'update']);  // [A]
+$router->delete('/api/eje3/retribucion-social/:id',[SocialReturnController::class, 'destroy']); // [A]
+
+// Actividades de egresados de posgrado
+$router->get('/api/eje3/egresados',                [GraduateController::class, 'index']);     // [A]
+$router->get('/api/eje3/egresados/:id',            [GraduateController::class, 'show']);      // [A]
+$router->post('/api/eje3/egresados',               [GraduateController::class, 'store']);     // [A]
+$router->put('/api/eje3/egresados/:id',            [GraduateController::class, 'update']);    // [A]
+$router->delete('/api/eje3/egresados/:id',         [GraduateController::class, 'destroy']);   // [A]
+
+// Docentes y SNII
+$router->get('/api/eje3/docentes',                 [FacultyController::class, 'index']);      // [A]
+$router->put('/api/eje3/docentes/:id/snii',        [FacultyController::class, 'updateSnii']); // [A]
+
+// Hub de Registro, Monitoreo, Visualizar y Difundir
+$router->get('/api/eje3/catalogos',                [CatalogController::class, 'index']);      // [A]
+$router->get('/api/eje3/monitoreo',                [MonitoringController::class, 'index']);   // [A]
+$router->get('/api/eje3/visualizar',               [VisualizationController::class, 'index']);// [A]
+$router->get('/api/eje3/difusion',                 [PublicDisseminationController::class, 'index']);          // [P]
+$router->get('/api/eje3/difusion/eventos/:id',     [PublicDisseminationController::class, 'showEvent']);      // [P]
+
+// --- MÓDULO 11: ROL DOCENTE (prefijo /api/docente; solo docentes con sesión vigente) ---
+// Cada ruta exige AuthController::checkDocente() y opera únicamente sobre los proyectos propios.
+use App\Modules\Docente\DocenteController;
+$router->get('/api/docente/resumen',               [DocenteController::class, 'summary']);
+$router->get('/api/docente/proyectos',             [DocenteController::class, 'index']);
+$router->post('/api/docente/proyectos',            [DocenteController::class, 'store']);
+$router->get('/api/docente/proyectos/:id',         [DocenteController::class, 'show']);
+$router->put('/api/docente/proyectos/:id',         [DocenteController::class, 'update']);
+$router->delete('/api/docente/proyectos/:id',      [DocenteController::class, 'destroy']);
+$router->post('/api/docente/proyectos/:id/enviar', [DocenteController::class, 'submit']);
 
 // 5. Despachamos la petición hacia la ruta coincidente
 $router->dispatch($request);

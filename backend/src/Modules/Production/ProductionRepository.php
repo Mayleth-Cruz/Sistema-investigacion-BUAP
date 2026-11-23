@@ -38,8 +38,8 @@ class ProductionRepository {
         }
 
         if (!empty($search)) {
-            $conditions[] = "(pt.titulo LIKE :search OR pt.autores LIKE :search OR pt.numero_registro LIKE :search OR pt.institucion_evento LIKE :search)";
-            $params[':search'] = "%{$search}%";
+            $conditions[] = "(pt.titulo LIKE :s1 OR pt.autores LIKE :s2 OR pt.numero_registro LIKE :s3 OR pt.institucion_evento LIKE :s4)";
+            foreach ([':s1', ':s2', ':s3', ':s4'] as $name) { $params[$name] = "%{$search}%"; }
         }
 
         if (!empty($conditions)) {

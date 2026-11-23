@@ -1,0 +1,42 @@
+{
+  "success": true,
+  "message": "Resumen del docente obtenido exitosamente.",
+  "data": {
+    "docente": {
+      "id": 1,
+      "nombre_completo": "Dra. Elena Ramos Sandoval",
+      "correo": "elena.ramos@universidad.edu",
+      "afiliacion": "Facultad de Ingeniería - Depto. de Computación",
+      "categoria": "Investigador Senior (Nivel III)",
+      "linea_investigacion": "Inteligencia Artificial y Procesamiento de Lenguaje Natural",
+      "snii_nivel": "III",
+      "snii_elegible": 0
+    },
+    "proyectos_por_estado": {
+      "borrador": 1,
+      "enviado": 1,
+      "aprobado": 3,
+      "devuelto": 1
+    },
+    "total_proyectos": 6,
+    "publicaciones": [
+      {
+        "id": 9,
+        "titulo": "Arquitecturahujhs Transformers Multimodales para Diagnóstico Radiológico Torácico Automatizado",
+        "anio": 2026,
+        "revista_editorial": "IEEE Transactions on Medical Imaging",
+        "origen": "otra"
+      },
+      {
+        "id": 1,
+        "titulo": "Deep multimodal transformer architectures for automated chest radiograph report generation: A benchmark study",
+        "anio": 2025,
+        "revista_editorial": "IEEE Transactions on Medical Imaging",
+        "origen": "evento"
+      }
+    ],
+    "total_publicaciones": 2,
+    "produccion_tecnica": [],
+    "total_produccion_tecnica": 0
+  }
+}

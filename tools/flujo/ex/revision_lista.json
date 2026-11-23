@@ -1,0 +1,57 @@
+{
+  "success": true,
+  "message": "Bandeja de revisión obtenida exitosamente.",
+  "data": {
+    "pendientes": 2,
+    "proyectos": [
+      {
+        "id": 13,
+        "codigo": "SEM-2026-901",
+        "titulo": "Semillero de analítica de datos para emprendedores universitarios",
+        "resumen": "Estudiantes y profesores construyen tableros sencillos para apoyar a emprendedores de la comunidad universitaria.",
+        "investigador_principal_id": 1,
+        "investigador_principal_nombre": "Dra. Elena Ramos Sandoval",
+        "co_investigadores": "Est. Paola Herrera, Est. Jorge Salinas",
+        "estado": "en_ejecucion",
+        "fecha_inicio": "2026-11-16",
+        "fecha_fin": null,
+        "presupuesto": 0,
+        "entidad_financiadora": "Fondos Internos Institucionales",
+        "linea_investigacion": "Gestión de la innovación",
+        "tipo": "semillero",
+        "evento_id": 1,
+        "evento_nombre": "Encuentro de Semilleros de Investigación 2026",
+        "articulado_civ": 0,
+        "registro_estado": "enviado",
+        "comentario_revision": null,
+        "enviado_en": "2026-11-14 04:44:39",
+        "revisado_en": null,
+        "total_apartados": 2
+      },
+      {
+        "id": 16,
+        "codigo": "SEM-2026-004",
+        "titulo": "Semillero de finanzas personales para jóvenes universitarios",
+        "resumen": "Talleres para que estudiantes de licenciatura aprendan a planear su presupuesto.",
+        "investigador_principal_id": 6,
+        "investigador_principal_nombre": "Alejandro Morales Juárez",
+        "co_investigadores": null,
+        "estado": "en_ejecucion",
+        "fecha_inicio": "2026-11-16",
+        "fecha_fin": null,
+        "presupuesto": 0,
+        "entidad_financiadora": "Fondos Internos Institucionales",
+        "linea_investigacion": "Educación financiera",
+        "tipo": "semillero",
+        "evento_id": 1,
+        "evento_nombre": "Encuentro de Semilleros de Investigación 2026",
+        "articulado_civ": 0,
+        "registro_estado": "enviado",
+        "comentario_revision": null,
+        "enviado_en": "2026-11-16 04:44:42",
+        "revisado_en": null,
+        "total_apartados": 2
+      }
+    ]
+  }
+}

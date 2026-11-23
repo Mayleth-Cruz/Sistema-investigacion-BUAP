@@ -1,0 +1,40 @@
+{
+  "success": true,
+  "message": "Proyecto enviado a revisión.",
+  "data": {
+    "id": 16,
+    "codigo": "SEM-2026-004",
+    "titulo": "Semillero de finanzas personales para jóvenes universitarios",
+    "resumen": "Talleres para que estudiantes de licenciatura aprendan a planear su presupuesto.",
+    "co_investigadores": null,
+    "estado": "en_ejecucion",
+    "fecha_inicio": "2026-11-16",
+    "fecha_fin": null,
+    "presupuesto": 0,
+    "entidad_financiadora": "Fondos Internos Institucionales",
+    "linea_investigacion": "Educación financiera",
+    "tipo": "semillero",
+    "evento_id": 1,
+    "evento_nombre": "Encuentro de Semilleros de Investigación 2026",
+    "articulado_civ": 0,
+    "registro_estado": "enviado",
+    "comentario_revision": null,
+    "enviado_en": "2026-11-16 04:44:42",
+    "revisado_en": null,
+    "total_apartados": 2,
+    "apartados": [
+      {
+        "id": 15,
+        "apartado": "Planteamiento del problema",
+        "contenido": "Pocos jóvenes llevan un presupuesto.",
+        "orden": 0
+      },
+      {
+        "id": 16,
+        "apartado": "Metodología",
+        "contenido": "Talleres y encuestas.",
+        "orden": 1
+      }
+    ]
+  }
+}
